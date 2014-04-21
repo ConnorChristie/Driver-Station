@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B307054A18E126770013C72F /* DriverStationTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B307054918E126770013C72F /* DriverStationTableViewController.m */; };
+		B307054F18E25B930013C72F /* Utilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B307054E18E25B930013C72F /* Utilities.m */; };
+		B307055218E319CE0013C72F /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B307055118E319CE0013C72F /* MainViewController.m */; };
+		B307055518E31AE50013C72F /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B307055418E31AE50013C72F /* StatusViewController.m */; };
+		B307055818E3362B0013C72F /* CRCVerifier.m in Sources */ = {isa = PBXBuildFile; fileRef = B307055718E3362B0013C72F /* CRCVerifier.m */; };
+		B307055B18E3372C0013C72F /* ControlTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B307055A18E3372C0013C72F /* ControlTableViewCell.m */; };
+		B3483E9F1900A87200C5A29F /* info-32.png in Resources */ = {isa = PBXBuildFile; fileRef = B3483E9E1900A87200C5A29F /* info-32.png */; };
+		B3483EA11900A88500C5A29F /* joystick-32.png in Resources */ = {isa = PBXBuildFile; fileRef = B3483EA01900A88500C5A29F /* joystick-32.png */; };
+		B3483EA31900A88E00C5A29F /* switch-32.png in Resources */ = {isa = PBXBuildFile; fileRef = B3483EA21900A88E00C5A29F /* switch-32.png */; };
+		B34BBD4018E5BB4200D8F2D5 /* JoystickViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B34BBD3F18E5BB4200D8F2D5 /* JoystickViewController.m */; };
+		B34BBD4318E5C1B500D8F2D5 /* ControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = B34BBD4218E5C1B500D8F2D5 /* ControlView.m */; };
+		B34BBD4618E7304800D8F2D5 /* BorderButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B34BBD4518E7304800D8F2D5 /* BorderButton.m */; };
+		B3584B2918F83033006012E7 /* IOViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3584B2818F83033006012E7 /* IOViewController.m */; };
+		B39F00E318FEDD2B008706F4 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B39F00E218FEDD2B008706F4 /* CoreBluetooth.framework */; };
 		B3A159BA18AD8CD00099D64A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3A159B918AD8CD00099D64A /* Foundation.framework */; };
 		B3A159BC18AD8CD00099D64A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3A159BB18AD8CD00099D64A /* CoreGraphics.framework */; };
 		B3A159BE18AD8CD00099D64A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3A159BD18AD8CD00099D64A /* UIKit.framework */; };
@@ -14,13 +28,17 @@
 		B3A159C618AD8CD00099D64A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3A159C518AD8CD00099D64A /* main.m */; };
 		B3A159CA18AD8CD00099D64A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B3A159C918AD8CD00099D64A /* AppDelegate.m */; };
 		B3A159CD18AD8CD00099D64A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B3A159CB18AD8CD00099D64A /* Main.storyboard */; };
-		B3A159D018AD8CD00099D64A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3A159CF18AD8CD00099D64A /* ViewController.m */; };
 		B3A159D218AD8CD00099D64A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B3A159D118AD8CD00099D64A /* Images.xcassets */; };
 		B3A159D918AD8CD00099D64A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3A159D818AD8CD00099D64A /* XCTest.framework */; };
 		B3A159DA18AD8CD00099D64A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3A159B918AD8CD00099D64A /* Foundation.framework */; };
 		B3A159DB18AD8CD00099D64A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3A159BD18AD8CD00099D64A /* UIKit.framework */; };
 		B3A159E318AD8CD00099D64A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B3A159E118AD8CD00099D64A /* InfoPlist.strings */; };
 		B3A159E518AD8CD00099D64A /* Driver_StationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3A159E418AD8CD00099D64A /* Driver_StationTests.m */; };
+		B3A378DE18FF82BF00AE438E /* UI Sidewalk 640x480.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B3A378DD18FF82BF00AE438E /* UI Sidewalk 640x480.jpg */; };
+		B3BDB82B18AD9137001C993F /* ConnectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BDB82A18AD9137001C993F /* ConnectViewController.m */; };
+		B3BDB82F18AD92BF001C993F /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BDB82E18AD92BF001C993F /* GCDAsyncUdpSocket.m */; };
+		B3BDB83318AD9345001C993F /* UdpApi.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BDB83218AD9345001C993F /* UdpApi.m */; };
+		B3D251D218DFCE6A0050AAA3 /* AsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D251D118DFCE6A0050AAA3 /* AsyncUdpSocket.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +52,32 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B307054818E126770013C72F /* DriverStationTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DriverStationTableViewController.h; sourceTree = "<group>"; };
+		B307054918E126770013C72F /* DriverStationTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DriverStationTableViewController.m; sourceTree = "<group>"; };
+		B307054C18E25AE50013C72F /* PacketDef.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PacketDef.h; sourceTree = "<group>"; };
+		B307054D18E25B930013C72F /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
+		B307054E18E25B930013C72F /* Utilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utilities.m; sourceTree = "<group>"; };
+		B307055018E319CE0013C72F /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
+		B307055118E319CE0013C72F /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
+		B307055318E31AE50013C72F /* StatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusViewController.h; sourceTree = "<group>"; };
+		B307055418E31AE50013C72F /* StatusViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusViewController.m; sourceTree = "<group>"; };
+		B307055618E3362B0013C72F /* CRCVerifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRCVerifier.h; sourceTree = "<group>"; };
+		B307055718E3362B0013C72F /* CRCVerifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRCVerifier.m; sourceTree = "<group>"; };
+		B307055918E3372C0013C72F /* ControlTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlTableViewCell.h; sourceTree = "<group>"; };
+		B307055A18E3372C0013C72F /* ControlTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControlTableViewCell.m; sourceTree = "<group>"; };
+		B3483E9E1900A87200C5A29F /* info-32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "info-32.png"; sourceTree = "<group>"; };
+		B3483EA01900A88500C5A29F /* joystick-32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "joystick-32.png"; sourceTree = "<group>"; };
+		B3483EA21900A88E00C5A29F /* switch-32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "switch-32.png"; sourceTree = "<group>"; };
+		B34BBD3E18E5BB4200D8F2D5 /* JoystickViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JoystickViewController.h; sourceTree = "<group>"; };
+		B34BBD3F18E5BB4200D8F2D5 /* JoystickViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JoystickViewController.m; sourceTree = "<group>"; };
+		B34BBD4118E5C1B500D8F2D5 /* ControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ControlView.h; sourceTree = "<group>"; };
+		B34BBD4218E5C1B500D8F2D5 /* ControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControlView.m; sourceTree = "<group>"; };
+		B34BBD4418E7304800D8F2D5 /* BorderButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BorderButton.h; sourceTree = "<group>"; };
+		B34BBD4518E7304800D8F2D5 /* BorderButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BorderButton.m; sourceTree = "<group>"; };
+		B3584B2718F83033006012E7 /* IOViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOViewController.h; sourceTree = "<group>"; };
+		B3584B2818F83033006012E7 /* IOViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IOViewController.m; sourceTree = "<group>"; };
+		B39F00E218FEDD2B008706F4 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		B39F00E418FEDFE6008706F4 /* TransferService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TransferService.h; sourceTree = "<group>"; };
 		B3A159B618AD8CD00099D64A /* Driver Station.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Driver Station.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3A159B918AD8CD00099D64A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B3A159BB18AD8CD00099D64A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -45,14 +89,21 @@
 		B3A159C818AD8CD00099D64A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B3A159C918AD8CD00099D64A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		B3A159CC18AD8CD00099D64A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		B3A159CE18AD8CD00099D64A /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		B3A159CF18AD8CD00099D64A /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		B3A159D118AD8CD00099D64A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B3A159D718AD8CD00099D64A /* Driver StationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Driver StationTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3A159D818AD8CD00099D64A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		B3A159E018AD8CD00099D64A /* Driver StationTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Driver StationTests-Info.plist"; sourceTree = "<group>"; };
 		B3A159E218AD8CD00099D64A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B3A159E418AD8CD00099D64A /* Driver_StationTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Driver_StationTests.m; sourceTree = "<group>"; };
+		B3A378DD18FF82BF00AE438E /* UI Sidewalk 640x480.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "UI Sidewalk 640x480.jpg"; sourceTree = "<group>"; };
+		B3BDB82918AD9137001C993F /* ConnectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectViewController.h; sourceTree = "<group>"; };
+		B3BDB82A18AD9137001C993F /* ConnectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectViewController.m; sourceTree = "<group>"; };
+		B3BDB82D18AD92BE001C993F /* GCDAsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncUdpSocket.h; sourceTree = "<group>"; };
+		B3BDB82E18AD92BF001C993F /* GCDAsyncUdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncUdpSocket.m; sourceTree = "<group>"; };
+		B3BDB83118AD9345001C993F /* UdpApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UdpApi.h; sourceTree = "<group>"; };
+		B3BDB83218AD9345001C993F /* UdpApi.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UdpApi.m; sourceTree = "<group>"; };
+		B3D251D018DFCE6A0050AAA3 /* AsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AsyncUdpSocket.h; path = "../../../Downloads/CocoaAsyncSocket-master/RunLoop/AsyncUdpSocket.h"; sourceTree = "<group>"; };
+		B3D251D118DFCE6A0050AAA3 /* AsyncUdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AsyncUdpSocket.m; path = "../../../Downloads/CocoaAsyncSocket-master/RunLoop/AsyncUdpSocket.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +111,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B39F00E318FEDD2B008706F4 /* CoreBluetooth.framework in Frameworks */,
 				B3A159BC18AD8CD00099D64A /* CoreGraphics.framework in Frameworks */,
 				B3A159BE18AD8CD00099D64A /* UIKit.framework in Frameworks */,
 				B3A159BA18AD8CD00099D64A /* Foundation.framework in Frameworks */,
@@ -79,6 +131,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B3483E971900A82700C5A29F /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				B3A378DD18FF82BF00AE438E /* UI Sidewalk 640x480.jpg */,
+				B3483E9E1900A87200C5A29F /* info-32.png */,
+				B3483EA01900A88500C5A29F /* joystick-32.png */,
+				B3483EA21900A88E00C5A29F /* switch-32.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
 		B3A159AD18AD8CD00099D64A = {
 			isa = PBXGroup;
 			children = (
@@ -101,6 +164,7 @@
 		B3A159B818AD8CD00099D64A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B39F00E218FEDD2B008706F4 /* CoreBluetooth.framework */,
 				B3A159B918AD8CD00099D64A /* Foundation.framework */,
 				B3A159BB18AD8CD00099D64A /* CoreGraphics.framework */,
 				B3A159BD18AD8CD00099D64A /* UIKit.framework */,
@@ -112,11 +176,35 @@
 		B3A159BF18AD8CD00099D64A /* Driver Station */ = {
 			isa = PBXGroup;
 			children = (
+				B3483E971900A82700C5A29F /* Images */,
+				B3BDB83018AD9329001C993F /* UDP API */,
+				B3BDB82C18AD92B1001C993F /* Sockets */,
+				B3BDB82818AD9120001C993F /* Connect */,
+				B307054818E126770013C72F /* DriverStationTableViewController.h */,
+				B307054918E126770013C72F /* DriverStationTableViewController.m */,
 				B3A159C818AD8CD00099D64A /* AppDelegate.h */,
 				B3A159C918AD8CD00099D64A /* AppDelegate.m */,
+				B307055018E319CE0013C72F /* MainViewController.h */,
+				B307055118E319CE0013C72F /* MainViewController.m */,
+				B307055318E31AE50013C72F /* StatusViewController.h */,
+				B307055418E31AE50013C72F /* StatusViewController.m */,
+				B34BBD3E18E5BB4200D8F2D5 /* JoystickViewController.h */,
+				B34BBD3F18E5BB4200D8F2D5 /* JoystickViewController.m */,
+				B3584B2718F83033006012E7 /* IOViewController.h */,
+				B3584B2818F83033006012E7 /* IOViewController.m */,
 				B3A159CB18AD8CD00099D64A /* Main.storyboard */,
-				B3A159CE18AD8CD00099D64A /* ViewController.h */,
-				B3A159CF18AD8CD00099D64A /* ViewController.m */,
+				B34BBD4118E5C1B500D8F2D5 /* ControlView.h */,
+				B34BBD4218E5C1B500D8F2D5 /* ControlView.m */,
+				B34BBD4418E7304800D8F2D5 /* BorderButton.h */,
+				B34BBD4518E7304800D8F2D5 /* BorderButton.m */,
+				B307054C18E25AE50013C72F /* PacketDef.h */,
+				B307054D18E25B930013C72F /* Utilities.h */,
+				B307054E18E25B930013C72F /* Utilities.m */,
+				B307055618E3362B0013C72F /* CRCVerifier.h */,
+				B307055718E3362B0013C72F /* CRCVerifier.m */,
+				B39F00E418FEDFE6008706F4 /* TransferService.h */,
+				B307055918E3372C0013C72F /* ControlTableViewCell.h */,
+				B307055A18E3372C0013C72F /* ControlTableViewCell.m */,
 				B3A159D118AD8CD00099D64A /* Images.xcassets */,
 				B3A159C018AD8CD00099D64A /* Supporting Files */,
 			);
@@ -150,6 +238,35 @@
 				B3A159E118AD8CD00099D64A /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B3BDB82818AD9120001C993F /* Connect */ = {
+			isa = PBXGroup;
+			children = (
+				B3BDB82918AD9137001C993F /* ConnectViewController.h */,
+				B3BDB82A18AD9137001C993F /* ConnectViewController.m */,
+			);
+			name = Connect;
+			sourceTree = "<group>";
+		};
+		B3BDB82C18AD92B1001C993F /* Sockets */ = {
+			isa = PBXGroup;
+			children = (
+				B3D251D018DFCE6A0050AAA3 /* AsyncUdpSocket.h */,
+				B3D251D118DFCE6A0050AAA3 /* AsyncUdpSocket.m */,
+				B3BDB82D18AD92BE001C993F /* GCDAsyncUdpSocket.h */,
+				B3BDB82E18AD92BF001C993F /* GCDAsyncUdpSocket.m */,
+			);
+			name = Sockets;
+			sourceTree = "<group>";
+		};
+		B3BDB83018AD9329001C993F /* UDP API */ = {
+			isa = PBXGroup;
+			children = (
+				B3BDB83118AD9345001C993F /* UdpApi.h */,
+				B3BDB83218AD9345001C993F /* UdpApi.m */,
+			);
+			name = "UDP API";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -196,9 +313,12 @@
 		B3A159AE18AD8CD00099D64A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "Connor Christie";
 				TargetAttributes = {
+					B3A159B518AD8CD00099D64A = {
+						DevelopmentTeam = MB848KS9KT;
+					};
 					B3A159D618AD8CD00099D64A = {
 						TestTargetID = B3A159B518AD8CD00099D64A;
 					};
@@ -229,7 +349,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3A159D218AD8CD00099D64A /* Images.xcassets in Resources */,
+				B3483EA31900A88E00C5A29F /* switch-32.png in Resources */,
 				B3A159C418AD8CD00099D64A /* InfoPlist.strings in Resources */,
+				B3483EA11900A88500C5A29F /* joystick-32.png in Resources */,
+				B3483E9F1900A87200C5A29F /* info-32.png in Resources */,
+				B3A378DE18FF82BF00AE438E /* UI Sidewalk 640x480.jpg in Resources */,
 				B3A159CD18AD8CD00099D64A /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -249,9 +373,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3A159D018AD8CD00099D64A /* ViewController.m in Sources */,
+				B34BBD4318E5C1B500D8F2D5 /* ControlView.m in Sources */,
+				B34BBD4018E5BB4200D8F2D5 /* JoystickViewController.m in Sources */,
+				B3BDB83318AD9345001C993F /* UdpApi.m in Sources */,
+				B307055818E3362B0013C72F /* CRCVerifier.m in Sources */,
+				B3584B2918F83033006012E7 /* IOViewController.m in Sources */,
+				B3BDB82F18AD92BF001C993F /* GCDAsyncUdpSocket.m in Sources */,
+				B307054F18E25B930013C72F /* Utilities.m in Sources */,
 				B3A159CA18AD8CD00099D64A /* AppDelegate.m in Sources */,
+				B307055518E31AE50013C72F /* StatusViewController.m in Sources */,
+				B307055218E319CE0013C72F /* MainViewController.m in Sources */,
+				B34BBD4618E7304800D8F2D5 /* BorderButton.m in Sources */,
 				B3A159C618AD8CD00099D64A /* main.m in Sources */,
+				B3BDB82B18AD9137001C993F /* ConnectViewController.m in Sources */,
+				B307055B18E3372C0013C72F /* ControlTableViewCell.m in Sources */,
+				B3D251D218DFCE6A0050AAA3 /* AsyncUdpSocket.m in Sources */,
+				B307054A18E126770013C72F /* DriverStationTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,7 +442,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -344,7 +480,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -378,10 +513,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Driver Station/Driver Station-Prefix.pch";
 				INFOPLIST_FILE = "Driver Station/Driver Station-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -391,10 +530,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Driver Station/Driver Station-Prefix.pch";
 				INFOPLIST_FILE = "Driver Station/Driver Station-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -402,7 +545,6 @@
 		B3A159EC18AD8CD00099D64A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Driver Station.app/Driver Station";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -425,7 +567,6 @@
 		B3A159ED18AD8CD00099D64A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Driver Station.app/Driver Station";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
@@ -460,6 +601,7 @@
 				B3A159EA18AD8CD00099D64A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B3A159EB18AD8CD00099D64A /* Build configuration list for PBXNativeTarget "Driver StationTests" */ = {
 			isa = XCConfigurationList;
@@ -468,6 +610,7 @@
 				B3A159ED18AD8CD00099D64A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

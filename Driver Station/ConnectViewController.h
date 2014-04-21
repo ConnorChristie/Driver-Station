@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  ConnectViewController.h
 //  Driver Station
 //
 //  Created by Connor on 2/13/14.
@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface ConnectViewController : UITableViewController
+
+@property (weak, nonatomic) IBOutlet UITextField *teamNumber;
 
 @end

@@ -7,10 +7,20 @@
 #import <Availability.h>
 
 #ifndef __IPHONE_5_0
-#warning "This project uses features only available in iOS SDK 5.0 and later."
+    #warning "This project uses features only available in iOS SDK 5.0 and later."
 #endif
 
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
+
+    #define RobotNotConnected 0
+    #define RobotDisabled 1
+    #define RobotWatchdogNotFed 2
+    #define RobotEnabled 4
+    #define RobotAutonomous 8
+
+    #define CameraNotStarted 0
+    #define CameraNotConnected 1
+    #define CameraConnected 2
 #endif
