@@ -1,5 +1,5 @@
 //
-//  MainViewController.h
+//  iMainViewController.h
 //  Driver Station
 //
 //  Created by Connor on 3/26/14.
@@ -22,7 +22,7 @@
 #import "Utilities.h"
 #import "PacketDef.h"
 
-@interface MainViewController : UITabBarController <CBCentralManagerDelegate, CBPeripheralDelegate, CBPeripheralManagerDelegate, UIAlertViewDelegate>
+@interface iMainViewController : UISplitViewController <CBCentralManagerDelegate, CBPeripheralDelegate, CBPeripheralManagerDelegate, UIAlertViewDelegate>
 
 @property (nonatomic) int autoTime;
 @property (nonatomic) int currentTime;
@@ -60,10 +60,9 @@
 
 - (void)changeTeam;
 - (void)updateAndSend;
-- (void)blueJoystick:(BOOL)status;
 - (void)changeControl:(BOOL)enable;
 
--(struct RobotDataPacket*)getInputPacket;
--(struct FRCCommonControlData*)getOutputPacket;
+- (struct RobotDataPacket *)getInputPacket;
+- (struct FRCCommonControlData *)getOutputPacket;
 
 @end

@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<script type="text/javascript">{jquery}</script>
+		
+		<script type="text/javascript">
+			$(function() {
+				$("#errordiv").click(reload);
+				$("#stream").click(reload);
+				
+				reload();
+			});
+			
+			function reload()
+			{
+				$("#error").text("Loading Camera...");
+				
+				//$("#stream").attr("src", "http://10.{te}.{am}.11/mjpg/video.mjpg?resolution=640x480&fps=30");
+				$("#stream").attr("src", "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQ1kRNwIlheGr3Hmd84eUHWqBcsKPGazvomoyEbEPvHq4BrZDxLgg");
+				
+				$("#stream").load(function() {
+					$("#stream").css({"display":"block"});
+					$("#errordiv").css({"display":"none"});
+				}).error(function() {
+					$("#error").text("Tap to refresh camera");
+				
+					$("#stream").css({"display":"none"});
+					$("#errordiv").css({"display":"block"});
+				});
+			}
+		</script>
+	</head>
+	<body style="padding: 0; margin: 0;">
+		<div id="errordiv" style="display: none; background: lightgray; height: 100%; text-align: center;">
+			<label id="error" style="position: relative; top: 48%;">Tap to refresh camera</label>
+		</div>
+		
+		<img id="stream" width="350" height="292"/>
+	</body>
+</html>

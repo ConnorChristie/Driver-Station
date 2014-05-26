@@ -12,6 +12,7 @@
 #import "CameraViewController.h"
 
 #define Max .9921875
+#define IPAD UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
 
 @implementation ControlView
 {
@@ -36,22 +37,32 @@
     leftTouch = CGPointZero;
 	rightTouch = CGPointZero;
     
-    [self performSelector:@selector(adjust) withObject:nil afterDelay:.1];
-}
-
-- (void)adjust
-{
-    int widthDiff = 568 - delegate.width;
-    int dimension = 180 - (widthDiff / 4);
+    dPadLeft = CGRectMake(0, 0, 0, 0);
+    dPadRight = CGRectMake(0, 0, 0, 0);
     
-	dPadLeft = CGRectMake(15, self.frame.size.height / 2 - dimension / 2 - 11, dimension, dimension);
-    dPadRight = CGRectMake(delegate.width - dimension - 15, self.frame.size.height / 2 - dimension / 2 - 11, dimension, dimension);
-    
-    [self setNeedsDisplay];
+    [self performSelector:@selector(setNeedsDisplay) withObject:nil afterDelay:.1];
 }
 
 - (void)drawRect:(CGRect)rect
 {
+    if (delegate.width != 0)
+    {
+        if (!IPAD)
+        {
+            int widthDiff = 568 - delegate.width;
+            int dimension = 180 - (widthDiff / 4);
+            
+            dPadLeft = CGRectMake(15, self.frame.size.height / 2 - dimension / 2 - 11, dimension, dimension);
+            dPadRight = CGRectMake(delegate.width - dimension - 15, self.frame.size.height / 2 - dimension / 2 - 11, dimension, dimension);
+        } else
+        {
+            int dimension = 220;
+            
+            dPadLeft = CGRectMake(25, self.frame.size.height - dimension - 40, dimension, dimension);
+            dPadRight = CGRectMake(delegate.width - dimension - 25, self.frame.size.height - dimension - 40, dimension, dimension);
+        }
+    }
+    
     CGContextRef g = UIGraphicsGetCurrentContext();
     
 	CGFloat color[] = {0.0, 0.0, 0.0, 1.0};

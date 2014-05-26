@@ -10,6 +10,7 @@
 
 #import "AppDelegate.h"
 #import "ControlView.h"
+#import "IOViewController.h"
 #import "StatusViewController.h"
 #import "JoystickViewController.h"
 
@@ -20,11 +21,38 @@ static short ENABLED_BIT    = 0x20;
 static short AUTONOMOUS_BIT = 0x50;
 static short TELEOP_BIT     = 0x40;
 
+static int fromPort = 1150;
+static int toPort   = 1110;
+
 //0x42 = TEST
 //0x40 = TELEOP
 //0x50 = AUTO
 
 // + 20 == Enabled
+
+/*
+
+    Joysticks 1 - 2
+
+    Axis     | Code Reference
+     X Left  | 1
+     Y Left  | 2
+
+     X Right | 3
+     Y Right | 4
+
+    Buttons are number for number for Code Reference
+ 
+    Camera - Uses Joystick 1
+
+    Joystick 4 - Accelerometer
+
+    Axis | Code Reference
+     X   | 1
+     Y   | 2
+     Z   | 3
+ 
+ */
 
 @interface MainViewController ()
 {
@@ -47,7 +75,9 @@ static short TELEOP_BIT     = 0x40;
     UIAlertView *currentAlert;
     
     NSString *ipAddress;
+    
     NSTimer *timer;
+    NSTimer *secondTimer;
     
     int missed;
     double prevXYZ;
@@ -56,9 +86,6 @@ static short TELEOP_BIT     = 0x40;
 @end
 
 @implementation MainViewController
-
-int fromPort = 1150;
-int toPort   = 1110;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -77,12 +104,13 @@ int toPort   = 1110;
     
     delegate = [[UIApplication sharedApplication] delegate];
     delegate.teamNumber = 4095;
+    delegate.mainController = self;
     
     verifier = [[CRCVerifier alloc] init];
 	[verifier buildTable];
     
-    self.cbManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-    self.cbData    = [[NSMutableData alloc] init];
+    //self.cbManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+    //self.cbData    = [[NSMutableData alloc] init];
     
     motion = [[CMMotionManager alloc] init];
     motion.accelerometerUpdateInterval  = 1.0 / 10.0; // Update at 10Hz
@@ -114,6 +142,7 @@ int toPort   = 1110;
 
 - (void)blueJoystick:(BOOL)status
 {
+    /*
     if (status)
     {
         if (self.blueConnected)
@@ -154,6 +183,7 @@ int toPort   = 1110;
         
         [self.cbManager scanForPeripheralsWithServices:@[[CBUUID UUIDWithString:TRANSFER_SERVICE_UUID]] options:@{ CBCentralManagerScanOptionAllowDuplicatesKey : @YES }];
     }
+    */
 }
 
 /*
@@ -555,6 +585,7 @@ int toPort   = 1110;
     toRobotData.control = TELEOP_BIT;
     toRobotData.packetIndex = 0x00;
     
+    //Timing to send packets has to be EXACTLY 0.02 seconds...
 	timer = [NSTimer timerWithTimeInterval:0.02 target:self selector:@selector(updateAndSend)
                                   userInfo:nil repeats:YES];
     
@@ -573,12 +604,7 @@ int toPort   = 1110;
 
 - (void)changeTeam
 {
-    if ((toRobotData.control & ENABLED_BIT) == ENABLED_BIT)
-    {
-        toRobotData.control -= ENABLED_BIT;
-        
-        delegate.state = RobotDisabled;
-    }
+    [self changeControl:false];
     
     [self startTimer];
 }
@@ -589,6 +615,16 @@ int toPort   = 1110;
     
 	close(inputSocket);
 	close(outputSocket);
+}
+
+- (void)updateTime
+{
+    self.currentTime++;
+    
+    if (self.autoTime != 0 && self.currentTime >= self.autoTime)
+    {
+        [self changeControl:false];
+    }
 }
 
 - (BOOL)setupClient
@@ -654,7 +690,7 @@ int toPort   = 1110;
 	robotMain.sin_family = AF_INET;
 	robotMain.sin_port = htons(toPort);
     
-	if (inet_aton([ipAddress cStringUsingEncoding:NSStringEncodingConversionAllowLossy], &robotMain.sin_addr)== 0)
+	if (inet_aton([ipAddress cStringUsingEncoding:NSStringEncodingConversionAllowLossy], &robotMain.sin_addr) == 0)
 	{
 		NSLog(@"Error with iNet_aton function");
         
@@ -666,6 +702,27 @@ int toPort   = 1110;
 	return TRUE;
 }
 
+- (void)changeControl:(BOOL)enable
+{
+    if (enable && delegate.state == RobotDisabled)
+    {
+        secondTimer = [NSTimer timerWithTimeInterval:1.00 target:self selector:@selector(updateTime)
+                                            userInfo:nil repeats:YES];
+        
+        [[NSRunLoop currentRunLoop] addTimer:secondTimer forMode:NSDefaultRunLoopMode];
+        
+        toRobotData.control += ENABLED_BIT;
+    } else if (!enable && (delegate.state == RobotEnabled || delegate.state == RobotWatchdogNotFed || delegate.state == RobotAutonomous))
+    {
+        [secondTimer invalidate];
+        
+        secondTimer = nil;
+        self.currentTime = 0;
+        
+        toRobotData.control -= ENABLED_BIT;
+    }
+}
+
 - (void)updateAndSend
 {
     if (!self.isHost && self.blueConnected && ((JoystickViewController *)self.viewControllers[1]).selectedJoystick.selectedSegmentIndex == 2)
@@ -675,15 +732,41 @@ int toPort   = 1110;
     {
         [self updatePacket];
         
-        int se = sendto(outputSocket, &toRobotData, 1024, 0, (struct sockaddr *)&robotMain, sizeof(robotMain));
-        int re = recvfrom(inputSocket, &fromRobotData, 1024, 0, nil, 0);
+        ssize_t se = sendto(outputSocket, &toRobotData, 1024, 0, (struct sockaddr *)&robotMain, sizeof(robotMain));
+        ssize_t re = recvfrom(inputSocket, &fromRobotData, 1152, 0, nil, 0);
         
         [self updateUI:(se != -1 && re != -1)];
     }
     
+    //From robot data length
+    
+    NSString *userLine1 = [self charsToString:fromRobotData.userLine1];
+    NSString *userLine2 = [self charsToString:fromRobotData.userLine2];
+    NSString *userLine3 = [self charsToString:fromRobotData.userLine3];
+    NSString *userLine4 = [self charsToString:fromRobotData.userLine4];
+    NSString *userLine5 = [self charsToString:fromRobotData.userLine5];
+    NSString *userLine6 = [self charsToString:fromRobotData.userLine6];
+    
+    UITextView *text = (UITextView *)[((UIViewController *)self.viewControllers[3]).view viewWithTag:2];
+    
+    [text setText:[NSString stringWithFormat:@"%@\n%@\n%@\n%@\n%@\n%@", userLine1, userLine2, userLine3, userLine4, userLine5, userLine6]];
+    [text setFont:[UIFont systemFontOfSize:19]];
+    
     [((StatusViewController *)self.viewControllers[0]).tableView reloadData];
     
     [((JoystickViewController *)self.viewControllers[1]) update];
+}
+
+- (NSString *)charsToString:(char[])chars
+{
+    NSString *str = @"";
+    
+    for (int i = 0; i < 21; i++)
+    {
+        str = [NSString stringWithFormat:@"%@%c", str, chars[i]];
+    }
+    
+    return str;
 }
 
 - (void)updateUI:(BOOL)received
@@ -697,12 +780,14 @@ int toPort   = 1110;
         
 		missed++;
         
-        [((JoystickViewController *)self.viewControllers[1]).selectedJoystick setEnabled:true forSegmentAtIndex:2];
+        //[((JoystickViewController *)self.viewControllers[1]).selectedJoystick setEnabled:true forSegmentAtIndex:2];
 	} else
 	{
 		missed = 0;
         
-        [((JoystickViewController *)self.viewControllers[1]).selectedJoystick setEnabled:false forSegmentAtIndex:2];
+        //[((JoystickViewController *)self.viewControllers[1]).selectedJoystick setEnabled:false forSegmentAtIndex:2];
+        
+        //NSLog(@"0x%.2X - 0x%.2X", toRobotData.control, fromRobotData.control);
         
 		if ((toRobotData.control & ENABLED_BIT) == ENABLED_BIT)
 		{
@@ -723,13 +808,6 @@ int toPort   = 1110;
 		{
 			delegate.state = RobotDisabled;
 		}
-        
-        NSMutableString *str = [[NSMutableString alloc] init];
-        
-        for (int i = 0; i < 21; i++)
-        {
-            [str appendString:[NSString stringWithFormat:@"%c", fromRobotData.userLine1[i]]];
-        }
 	}
     
     if (self.blueConnected)
@@ -749,9 +827,9 @@ int toPort   = 1110;
     switch (self.teamColor)
     {
         case 0:
-            toRobotData.dsID_Alliance = 0x52; break;
+            toRobotData.dsID_Alliance = 'R'; break;
         case 1:
-            toRobotData.dsID_Alliance = 0x53; break;
+            toRobotData.dsID_Alliance = 'B'; break;
     }
     
     switch (self.teamIndex)
@@ -781,6 +859,7 @@ int toPort   = 1110;
     switch (joystickController.selectedJoystick.selectedSegmentIndex)
     {
         case 0:
+        case 3:
             toRobotData.stick0.stick0Axes[0] = [(NSNumber *)[stickArray objectAtIndex:0] intValue];
             toRobotData.stick0.stick0Axes[1] = [(NSNumber *)[stickArray objectAtIndex:1] intValue];
             toRobotData.stick0.stick0Axes[2] = [(NSNumber *)[stickArray objectAtIndex:2] intValue];
@@ -798,7 +877,6 @@ int toPort   = 1110;
             [Utilities setShort:&toRobotData.stick1Buttons value:buttonsOut];
             
             break;
-            /*
         case 2:
             toRobotData.stick2.stick2Axes[0] = [(NSNumber *)[stickArray objectAtIndex:0] intValue];
             toRobotData.stick2.stick2Axes[1] = [(NSNumber *)[stickArray objectAtIndex:1] intValue];
@@ -808,6 +886,7 @@ int toPort   = 1110;
             [Utilities setShort:&toRobotData.stick2Buttons value:buttonsOut];
             
             break;
+            /*
         case 3:
             toRobotData.stick3.stick3Axes[0] = [(NSNumber *)[stickArray objectAtIndex:0] intValue];
             toRobotData.stick3.stick3Axes[1] = [(NSNumber *)[stickArray objectAtIndex:1] intValue];
@@ -864,91 +943,36 @@ int toPort   = 1110;
     [Utilities setShort:&toRobotData.analog3 value:(uint16_t)self.analog3];
     [Utilities setShort:&toRobotData.analog4 value:(uint16_t)self.analog4];
     
-    /*
-	if(joy.selectedSegmentIndex != 4)
-	{
-		if ([camScreen isShown])
-		{
-			switch(joy.selectedSegmentIndex)
-			{
-				case 0: [camScreen getAxis:&toRobotData.stick0.stick0Axes[0]]; break;
-				case 1: [camScreen getAxis:&toRobotData.stick1.stick1Axes[0]]; break;
-				case 2: [camScreen getAxis:&toRobotData.stick2.stick2Axes[0]]; break;
-				case 3: [camScreen getAxis:&toRobotData.stick3.stick3Axes[0]]; break;
-			}
-		} else
-		{
-			switch(joy.selectedSegmentIndex)
-			{
-				case 0: [cs getAxis:&toRobotData.stick0.stick0Axes[0]];
-					[Utilities setShort:&toRobotData.stick0Buttons value:buttons_Out]; break;
-				case 1: [cs getAxis:&toRobotData.stick1.stick1Axes[0]];
-					[Utilities setShort:&toRobotData.stick1Buttons value:buttons_Out]; break;
-				case 2: [cs getAxis:&toRobotData.stick2.stick2Axes[0]];
-					[Utilities setShort:&toRobotData.stick2Buttons value:buttons_Out]; break;
-				case 3: [cs getAxis:&toRobotData.stick3.stick3Axes[0]];
-					[Utilities setShort:&toRobotData.stick3Buttons value:buttons_Out]; break;
-			}
-		}
-	}
-    
-	if (accel.selectedSegmentIndex != 4)
-	{
-		double x = [motion accelerometerData].acceleration.x;
-		double y = [motion accelerometerData].acceleration.y;
-		double z = [motion accelerometerData].acceleration.z;
-        
-		if ([accelMode selectedSegmentIndex] == 1)
-		{
-			x /= 3;
-			y /= 3;
-			z /= 3;
-		}
-        
-		x = (x<-1)?-1:((x>1)?1:x);
-		y = (y<-1)?-1:((y>1)?1:y);
-		z = (z<-1)?-1:((z>1)?1:z);
-        
-		if(x < 0) x *= 128; else x *= 127;
-		if(y < 0) y *= 128; else y *= 127;
-		if(z < 0) z *= 128; else z *= 127;
-        
-		int8_t xn = (int8_t)x;
-		int8_t yn = (int8_t)y;
-		int8_t zn = (int8_t)z;
-		uint8_t data [6] = {xn,yn,zn,0,0,0};
-        
-		switch (accel.selectedSegmentIndex)
-		{
-			case 0: memcpy(&toRobotData.stick0.stick0Axes, data, 6); break;
-			case 1: memcpy(&toRobotData.stick1.stick1Axes, data, 6); break;
-			case 2: memcpy(&toRobotData.stick2.stick2Axes, data, 6); break;
-			case 3: memcpy(&toRobotData.stick3.stick3Axes, data, 6); break;
-		}
-	}
-    */
+    IOViewController *io = [self.viewControllers objectAtIndex:2];
     
 	uint8_t dI = 0;
     
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 4; i++)
 	{
-        /*
-		BOOL temp = ((UISwitch *)[Utilities getFromArray:dIn withTag:i]).on;
+		BOOL temp = false;
+        
+        switch (i)
+        {
+            case 0: temp = io.digital1.on; break;
+            case 1: temp = io.digital2.on; break;
+            case 2: temp = io.digital3.on; break;
+            case 3: temp = io.digital4.on; break;
+        }
 		
         if (temp)
 		{
 			dI = dI | (1 << i);
 		}
-        */
-        dI = dI | (1 << i);
 	}
     
-    toRobotData.control |= 0x04;
+    toRobotData.control |= 0x04; //Resync
     
 	toRobotData.dsDigitalIn = dI;
 	toRobotData.CRC = 0;
     
 	uint32_t crc = [verifier verify:&toRobotData length:1024];
+    
+    //NSLog(@"%X", crc);
 	
 	[Utilities setInt:&toRobotData.CRC value:crc];
 }

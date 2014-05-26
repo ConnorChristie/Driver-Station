@@ -24,6 +24,10 @@ static short ENABLED_BIT = 0x20;
     BOOL isVisible;
     BOOL stopCamera;
     BOOL didReadCamera;
+    
+    BOOL loaded;
+    
+    NSTimer *camTimer;
 }
 
 @end
@@ -46,6 +50,7 @@ static short ENABLED_BIT = 0x20;
     delegate = [[UIApplication sharedApplication] delegate];
     
     self.currentState = -1;
+    self.cameraWebView.delegate = self;
     
     [self.button1 addTarget:self action:@selector(buttonHold:) forControlEvents:UIControlEventTouchDown];
     [self.button1 addTarget:self action:@selector(buttonRelease:) forControlEvents:UIControlEventTouchUpInside];
@@ -72,6 +77,8 @@ static short ENABLED_BIT = 0x20;
     [self.button6 addTarget:self action:@selector(buttonRelease:) forControlEvents:UIControlEventTouchUpOutside];
     
     self.control.titleLabel.textColor = [UIColor grayColor];
+    
+    loaded = true;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -92,44 +99,49 @@ static short ENABLED_BIT = 0x20;
         objc_msgSend([UIDevice currentDevice], @selector(setOrientation:), UIInterfaceOrientationLandscapeRight);
     }
     
-    widthDiff = 568 - self.view.frame.size.width;
-    
-    delegate.width = self.view.frame.size.width;
-    
-    CGRect frame = self.cameraView.frame;
-    
-    int camWidth = frame.size.height * (1 + 1 / 3);
-    
-    frame.origin.x = (self.view.frame.size.width / 2) - (camWidth / 2);
-    frame.size.width = camWidth;
-    
-    self.cameraView.frame = frame;
-    self.cameraView.hidden = true;
-    
-    NSArray *changeArr = @[[self.view viewWithTag:1],
-                           [self.view viewWithTag:2],
-                           [self.view viewWithTag:3],
-                           [self.view viewWithTag:4],
-                           [self.view viewWithTag:5],
-                           [self.view viewWithTag:6],
-                           [self.view viewWithTag:15],
-                           [self.view viewWithTag:16],
-                           [self.view viewWithTag:17],
-                           [self.view viewWithTag:18]];
-    
-    for (UIView *view in changeArr)
+    if (loaded)
     {
-        frame = view.frame;
+        widthDiff = 568 - self.view.frame.size.width;
         
-        if ([view class] == [UISegmentedControl class])
+        delegate.width = self.view.frame.size.width;
+        
+        CGRect frame = self.cameraWebView.frame;
+        
+        int camWidth = frame.size.height * (1 + 1 / 3);
+        
+        frame.origin.x = (self.view.frame.size.width / 2) - (camWidth / 2);
+        frame.size.width = camWidth;
+        
+        self.cameraWebView.frame = frame;
+        self.cameraWebView.hidden = true;
+        
+        NSArray *changeArr = @[[self.view viewWithTag:1],
+                               [self.view viewWithTag:2],
+                               [self.view viewWithTag:3],
+                               [self.view viewWithTag:4],
+                               [self.view viewWithTag:5],
+                               [self.view viewWithTag:6],
+                               [self.view viewWithTag:15],
+                               [self.view viewWithTag:16],
+                               [self.view viewWithTag:17],
+                               [self.view viewWithTag:18]];
+        
+        for (UIView *view in changeArr)
         {
-            frame.size.width -= widthDiff;
-        } else
-        {
-            frame.origin.x -= widthDiff / 2;
+            frame = view.frame;
+            
+            if ([view class] == [UISegmentedControl class])
+            {
+                frame.size.width -= widthDiff;
+            } else
+            {
+                frame.origin.x -= widthDiff / 2;
+            }
+            
+            view.frame = frame;
         }
         
-        view.frame = frame;
+        loaded = false;
     }
     
     isVisible = true;
@@ -153,19 +165,19 @@ static short ENABLED_BIT = 0x20;
     {
         [((MainViewController *) self.parentViewController) blueJoystick:true];
         
-        self.cameraView.hidden = true;
+        self.cameraWebView.hidden = true;
         
         stopCamera = false;
     } else if (joy.selectedSegmentIndex == 3)
     {
         [((MainViewController *) self.parentViewController) blueJoystick:false];
         
-        self.cameraView.hidden = false;
+        self.cameraWebView.hidden = false;
     } else
     {
         [((MainViewController *) self.parentViewController) blueJoystick:false];
         
-        self.cameraView.hidden = true;
+        self.cameraWebView.hidden = true;
         
         stopCamera = false;
     }
@@ -219,57 +231,94 @@ static short ENABLED_BIT = 0x20;
     
     self.battery.text = [NSString stringWithFormat:@"%.2X.%.2XV", fromData->batteryVolts, fromData->batteryMV];
     
-    if (isVisible && self.currentState != delegate.state)
+    switch (delegate.state)
     {
-        switch (delegate.state)
-        {
-            case RobotNotConnected:
-                self.control.titleLabel.text = @"Enable";
-                self.control.titleLabel.textColor = [UIColor grayColor];
-                self.control.enabled = false;
-                
-                break;
-            case RobotWatchdogNotFed:
-                self.control.titleLabel.text = @"Disable";
-                self.control.titleLabel.textColor = [UIColor redColor];
-                
-                break;
-            case RobotDisabled:
-                self.control.titleLabel.text = @"Enable";
-                self.control.titleLabel.textColor = [UIColor colorWithRed:0 green:207 / 255.0f blue:65 / 255.0f alpha:1];
-                
-                break;
-            case RobotEnabled:
-                self.control.titleLabel.text = @"Disable";
-                self.control.titleLabel.textColor = [UIColor redColor];
-                
-                break;
-            case RobotAutonomous:
-                self.control.titleLabel.text = @"Disable";
-                self.control.titleLabel.textColor = [UIColor redColor];
-                
-                break;
-        }
-        
-        self.currentState = delegate.state;
+        case RobotNotConnected:
+            self.control.titleLabel.text = @"Enable";
+            self.control.titleLabel.textColor = [UIColor grayColor];
+            self.control.enabled = false;
+            
+            break;
+        case RobotWatchdogNotFed:
+            self.control.titleLabel.text = @"Disable";
+            self.control.titleLabel.textColor = [UIColor redColor];
+            self.control.enabled = true;
+            
+            break;
+        case RobotDisabled:
+            self.control.titleLabel.text = @"Enable";
+            self.control.titleLabel.textColor = [UIColor colorWithRed:0 green:207 / 255.0f blue:65 / 255.0f alpha:1];
+            self.control.enabled = true;
+            
+            break;
+        case RobotEnabled:
+            self.control.titleLabel.text = @"Disable";
+            self.control.titleLabel.textColor = [UIColor redColor];
+            self.control.enabled = true;
+            
+            break;
+        case RobotAutonomous:
+            self.control.titleLabel.text = @"Disable";
+            self.control.titleLabel.textColor = [UIColor redColor];
+            self.control.enabled = true;
+            
+            break;
     }
     
     if (self.selectedJoystick.selectedSegmentIndex == 3 && !stopCamera && !didReadCamera)
     {
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://10.%i.%i.11/axis-cgi/mjpg/video.cgi?resolution=480x360&fps=30", delegate.teamNumber / 100, delegate.teamNumber % 100]]];
+        CGRect frame = self.cameraWebView.frame;
+        
+        NSString *url = [NSString stringWithFormat:@"http://10.%i.%i.11/mjpg/video.mjpg?resolution=640x480&fps=30", delegate.teamNumber / 100, delegate.teamNumber % 100];
+        
+        NSString *html = [NSString stringWithFormat:@"<body style=\"padding: 0; margin: 0;\"><img src=\"%@\" width=\"%fpx\" height=\"%fpx\"/></body>", url, frame.size.width, frame.size.height];
+        
+        [self.cameraWebView loadHTMLString:html baseURL:nil];
+        
+        //NSURLRequest* urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        
+        //[self.cameraWebView loadRequest:urlRequest];
+        
+        NSLog(@"Reading camera");
+        
+        /*
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://10.%i.%i.11/mjpg/video.mjpg?resolution=640x480&fps=30", delegate.teamNumber / 100, delegate.teamNumber % 100]]];
         
         [request setTimeoutInterval:3];
         
         //NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://141.89.114.58/cgi-bin/image320x240.jpg?dummy=1397745356691"]];
         
         [[NSURLConnection alloc] initWithRequest:request delegate:self];
+        */
         
         didReadCamera = true;
     }
 }
 
+- (void)cancelWeb
+{
+    stopCamera = true;
+    didReadCamera = false;
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Camera Error" message:[NSString stringWithFormat:@"We could not find the camera on its default IP of: 10.%i.%i.11.", delegate.teamNumber / 100, delegate.teamNumber % 100] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"Try Again", nil];
+    
+    [alert show];
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webView
+{
+    camTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(cancelWeb) userInfo:nil repeats:NO];
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
+    [camTimer invalidate];
+}
+
 - (IBAction)controlClick:(id)sender
 {
+    NSLog(@"State Changed");
+    
     struct FRCCommonControlData *data = [((MainViewController *) self.parentViewController) getOutputPacket];
     
     if (delegate.state == RobotDisabled)
@@ -281,30 +330,17 @@ static short ENABLED_BIT = 0x20;
     }
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+- (BOOL)dataIsValidJPEG:(NSData *)data
 {
-    UIImage *image = [UIImage imageWithData:data];
+    if (!data || data.length < 2) return false;
     
-    if (isVisible && image != nil)
-    {
-        [self.cameraView setImage:image];
-        
-        [self.cameraView setNeedsDisplay];
-        
-        didReadCamera = false;
-    }
+    NSInteger total = data.length;
+    const char *bytes = (const char *)[data bytes];
     
-    image = nil;
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    stopCamera = true;
-    didReadCamera = false;
-    
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Camera Error" message:[NSString stringWithFormat:@"We could not find the camera on its default IP of: 10.%i.%i.11.", delegate.teamNumber / 100, delegate.teamNumber % 100] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"Try Again", nil];
-    
-    [alert show];
+    return (bytes[0] == (char)0xFF &&
+            bytes[1] == (char)0xD8 &&
+            bytes[total - 2] == (char)0xFF &&
+            bytes[total - 1] == (char)0xD9);
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -312,6 +348,11 @@ static short ENABLED_BIT = 0x20;
     if (buttonIndex == 1)
     {
         stopCamera = false;
+    } else
+    {
+        self.selectedJoystick.selectedSegmentIndex = 0;
+        
+        [self joystickChanged:self.selectedJoystick];
     }
 }
 

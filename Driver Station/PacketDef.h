@@ -87,6 +87,7 @@ struct FRCCommonControlData
 	char versionData[8];
     
 	uint8_t highEndData[938];
+    
 	uint32_t CRC;
 };
 
@@ -108,8 +109,8 @@ struct RobotDataPacket
 			uint8_t out6 : 1;
 			uint8_t out7 : 1;
 			uint8_t out8 : 1;
-		}outputs;
-	}digitalOutput;
+		} outputs;
+	} digitalOutput;
     
 	uint8_t unknown1[4];
 	uint16_t teamNumber;
@@ -121,14 +122,16 @@ struct RobotDataPacket
     
 	uint8_t highData[988];
     
+	uint32_t crc;
+    
+    uint16_t unknown3;
+    
     char userLine1[21];
     char userLine2[21];
     char userLine3[21];
     char userLine4[21];
     char userLine5[21];
     char userLine6[21];
-    
-	uint32_t crc;
 };
 
 @end

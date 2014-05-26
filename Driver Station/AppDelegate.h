@@ -8,13 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-#import "UdpApi.h"
-#import "JoystickViewController.h"
+#import "PacketDef.h"
+#import "MainViewController.h"
+#import "iMainViewController.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) UdpApi *udpApi;
+
+@property (strong, nonatomic) UIViewController *mainController;
 
 @property (assign, nonatomic) int teamNumber;
 @property (assign, nonatomic) int state;

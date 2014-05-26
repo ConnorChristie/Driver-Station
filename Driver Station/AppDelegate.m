@@ -8,19 +8,33 @@
 
 #import "AppDelegate.h"
 
+#define IPAD UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    self.udpApi = [[UdpApi alloc] init];
-    
     return YES;
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    struct FRCCommonControlData *data = IPAD ? [((iMainViewController *) self.mainController) getOutputPacket] : [((MainViewController *) self.mainController) getOutputPacket];
+    
+    if (self.state == RobotDisabled)
+    {
+        data->control += 0x20;
+    } else if (self.state == RobotEnabled || self.state == RobotWatchdogNotFed || self.state == RobotAutonomous)
+    {
+        data->control -= 0x20;
+    }
+    
+    if (IPAD)
+        [((iMainViewController *)self.mainController) updateAndSend];
+    else
+        [((MainViewController *)self.mainController) updateAndSend];
+    
+    NSLog(@"Exiting app, sending disable");
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application

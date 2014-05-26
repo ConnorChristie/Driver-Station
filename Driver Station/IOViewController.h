@@ -10,4 +10,9 @@
 
 @interface IOViewController : UIViewController
 
+@property (weak, nonatomic) IBOutlet UISwitch *digital1;
+@property (weak, nonatomic) IBOutlet UISwitch *digital2;
+@property (weak, nonatomic) IBOutlet UISwitch *digital3;
+@property (weak, nonatomic) IBOutlet UISwitch *digital4;
+
 @end

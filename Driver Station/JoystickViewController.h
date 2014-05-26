@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface JoystickViewController : UIViewController <UIAlertViewDelegate, NSURLConnectionDataDelegate>
+@interface JoystickViewController : UIViewController <UIAlertViewDelegate, NSURLConnectionDataDelegate, UIWebViewDelegate>
 
-@property (weak, nonatomic) IBOutlet UIImageView *cameraView;
+@property (weak, nonatomic) IBOutlet UIWebView *cameraWebView;
 @property (weak, nonatomic) IBOutlet UIView *joystickView;
 
 @property (weak, nonatomic) IBOutlet UILabel *battery;

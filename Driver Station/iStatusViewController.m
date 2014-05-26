@@ -1,30 +1,30 @@
 //
-//  StatusViewController.m
+//  iStatusViewController.m
 //  Driver Station
 //
 //  Created by Connor on 3/26/14.
 //  Copyright (c) 2014 Connor Christie. All rights reserved.
 //
 
-#import "StatusViewController.h"
+#import "iStatusViewController.h"
 
 #import "AppDelegate.h"
 #import "ControlTableViewCell.h"
-#import "MainViewController.h"
+#import "iMainViewController.h"
 
 #import <objc/message.h>
 
 static short AUTONOMOUS_BIT = 0x50;
 static short TELEOP_BIT     = 0x40;
 
-@interface StatusViewController ()
+@interface iStatusViewController ()
 {
     AppDelegate *delegate;
 }
 
 @end
 
-@implementation StatusViewController
+@implementation iStatusViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -40,25 +40,6 @@ static short TELEOP_BIT     = 0x40;
     [super viewDidLoad];
     
     delegate = [[UIApplication sharedApplication] delegate];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    UIDeviceOrientation before = [[UIDevice currentDevice] orientation];
-    
-    if (UIInterfaceOrientationIsPortrait(before))
-    {
-        objc_msgSend([UIDevice currentDevice], @selector(setOrientation:), UIInterfaceOrientationPortraitUpsideDown);
-        objc_msgSend([UIDevice currentDevice], @selector(setOrientation:), before);
-    } else
-    {
-        objc_msgSend([UIDevice currentDevice], @selector(setOrientation:), UIInterfaceOrientationPortrait);
-    }
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    ((MainViewController *) self.parentViewController).currentIndex = 0;
 }
 
 - (void)didReceiveMemoryWarning
@@ -111,7 +92,7 @@ static short TELEOP_BIT     = 0x40;
             if (indexPath.row == 0)
             {
                 cell = [tableView dequeueReusableCellWithIdentifier:@"Team Number"];
-            
+                
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%i", delegate.teamNumber];
             }
             
@@ -122,7 +103,7 @@ static short TELEOP_BIT     = 0x40;
             {
                 cell = [tableView dequeueReusableCellWithIdentifier:@"Info"];
                 
-                int currentTime = ((MainViewController *) self.parentViewController).currentTime;
+                int currentTime = ((iMainViewController *) delegate.mainController).currentTime;
                 
                 cell.textLabel.text = @"Time";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%i:%02d", currentTime / 60, currentTime % 60];
@@ -130,7 +111,7 @@ static short TELEOP_BIT     = 0x40;
             {
                 cell = [tableView dequeueReusableCellWithIdentifier:@"Info"];
                 
-                struct RobotDataPacket *data = [((MainViewController *) self.parentViewController) getInputPacket];
+                struct RobotDataPacket *data = [((iMainViewController *) delegate.mainController) getInputPacket];
                 
                 if (delegate.state == RobotNotConnected)
                 {
@@ -176,31 +157,31 @@ static short TELEOP_BIT     = 0x40;
                         break;
                 }
             }/* else if (indexPath.row == 3)
-            {
-                cell = [tableView dequeueReusableCellWithIdentifier:@"Info"];
-                
-                cell.textLabel.text = @"Bluetooth";
-                cell.detailTextLabel.text = ((MainViewController *)self.parentViewController).blueConnected ? @"Connected" : @"Not Connected";
-            } */else if (indexPath.row == 3)
-            {
-                cell = [tableView dequeueReusableCellWithIdentifier:@"Alliance"];
-                
-                cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                
-                UISegmentedControl *color = (UISegmentedControl *) [cell viewWithTag:1];
-                UISegmentedControl *index = (UISegmentedControl *) [cell viewWithTag:2];
-                
-                if (color.selectedSegmentIndex == 0)
-                {
-                    [color setTintColor:[UIColor redColor]];
-                } else
-                {
-                    [color setTintColor:[UIColor blueColor]];
-                }
-                
-                ((MainViewController *) self.parentViewController).teamColor = color.selectedSegmentIndex;
-                ((MainViewController *) self.parentViewController).teamIndex = index.selectedSegmentIndex;
-            }
+              {
+              cell = [tableView dequeueReusableCellWithIdentifier:@"Info"];
+              
+              cell.textLabel.text = @"Bluetooth";
+              cell.detailTextLabel.text = ((MainViewController *)delegate.mainController).blueConnected ? @"Connected" : @"Not Connected";
+              } */else if (indexPath.row == 3)
+              {
+                  cell = [tableView dequeueReusableCellWithIdentifier:@"Alliance"];
+                  
+                  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                  
+                  UISegmentedControl *color = (UISegmentedControl *) [cell viewWithTag:1];
+                  UISegmentedControl *index = (UISegmentedControl *) [cell viewWithTag:2];
+                  
+                  if (color.selectedSegmentIndex == 0)
+                  {
+                      [color setTintColor:[UIColor redColor]];
+                  } else
+                  {
+                      [color setTintColor:[UIColor blueColor]];
+                  }
+                  
+                  ((iMainViewController *) delegate.mainController).teamColor = color.selectedSegmentIndex;
+                  ((iMainViewController *) delegate.mainController).teamIndex = index.selectedSegmentIndex;
+              }
             
             break;
         case 2:
@@ -257,7 +238,7 @@ static short TELEOP_BIT     = 0x40;
         [alert show];
     } else if (indexPath.section == 2)
     {
-        [((MainViewController *) self.parentViewController) changeControl:delegate.state == RobotDisabled];
+        [((iMainViewController *) delegate.mainController) changeControl:delegate.state == RobotDisabled];
     }
 }
 
@@ -269,7 +250,7 @@ static short TELEOP_BIT     = 0x40;
         {
             //Cancel click
             
-            struct FRCCommonControlData *data = [((MainViewController *) self.parentViewController) getOutputPacket];
+            struct FRCCommonControlData *data = [((iMainViewController *) delegate.mainController) getOutputPacket];
             
             data->control = TELEOP_BIT;
             
@@ -281,7 +262,7 @@ static short TELEOP_BIT     = 0x40;
             }
         } else
         {
-            ((MainViewController *) self.parentViewController).autoTime = [[alertView textFieldAtIndex:0].text intValue];
+            ((iMainViewController *) delegate.mainController).autoTime = [[alertView textFieldAtIndex:0].text intValue];
         }
     } else if (buttonIndex == 1)
     {
@@ -291,7 +272,7 @@ static short TELEOP_BIT     = 0x40;
         {
             delegate.teamNumber = [field.text intValue];
             
-            [((MainViewController *) self.parentViewController) changeTeam];
+            [((iMainViewController *) delegate.mainController) changeTeam];
         }
     }
 }
@@ -302,9 +283,9 @@ static short TELEOP_BIT     = 0x40;
     
     if (delegate.state != RobotNotConnected)
     {
-        [((MainViewController *) self.parentViewController) changeControl:false];
+        [((iMainViewController *) delegate.mainController) changeControl:false];
         
-        struct FRCCommonControlData *data = [((MainViewController *) self.parentViewController) getOutputPacket];
+        struct FRCCommonControlData *data = [((iMainViewController *) delegate.mainController) getOutputPacket];
         
         if (index == 0)
         {
@@ -333,11 +314,6 @@ static short TELEOP_BIT     = 0x40;
     }
     
     return 0;
-}
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskPortrait;
 }
 
 @end
