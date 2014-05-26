@@ -1,22 +1,11 @@
 Driver-Station
 ==============
 
-Joysticks 1 - 2
+This is a fully functioning iPhone Driver Station for the iPhone and the iPad!
 
-Axis     | Code Reference
- X Left  | 1
- Y Left  | 2
+It includes the following:
 
- X Right | 3
- Y Right | 4
-
-Buttons are number for number for Code Reference
-
-Camera - Uses Joystick 1
-
-Joystick 4 - Accelerometer
-
-Axis | Code Reference
- X   | 1
- Y   | 2
- Z   | 3
+- Multiple Joysticks
+- Accelerometer Input
+- Camera Feed
+- Joystick Buttons
