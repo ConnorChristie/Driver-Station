@@ -22,7 +22,7 @@ static short AUTONOMOUS_BIT = 0x50;
 static short TELEOP_BIT     = 0x40;
 
 static int fromPort = 1150;
-static int toPort  = 1110;
+static int toPort   = 1110;
 
 //0x42 = TEST
 //0x40 = TELEOP
