@@ -107,12 +107,18 @@ static short ENABLED_BIT = 0x20;
         
         CGRect frame = self.cameraWebView.frame;
         
-        int camWidth = frame.size.height * (1 + 1 / 3);
-        
-        frame.origin.x = (self.view.frame.size.width / 2) - (camWidth / 2);
-        frame.size.width = camWidth;
+        frame.origin.x = (self.view.frame.size.width / 2) - (frame.size.width / 2);
         
         self.cameraWebView.frame = frame;
+        
+        /*
+        int camHeight = frame.size.width * (1 + 1 / 3);
+        
+        frame.origin.x = (self.view.frame.size.width / 2) - (frame.size.width / 2);
+        frame.size.height = camHeight;
+        
+        self.cameraWebView.frame = frame;
+         */
         self.cameraWebView.hidden = true;
         
         NSArray *changeArr = @[[self.view viewWithTag:1],
@@ -265,54 +271,31 @@ static short ENABLED_BIT = 0x20;
             break;
     }
     
-    if (self.selectedJoystick.selectedSegmentIndex == 3 && !stopCamera && !didReadCamera)
+    if (self.selectedJoystick.selectedSegmentIndex == 3 && !didReadCamera)
     {
         CGRect frame = self.cameraWebView.frame;
         
-        NSString *url = [NSString stringWithFormat:@"http://10.%i.%i.11/mjpg/video.mjpg?resolution=640x480&fps=30", delegate.teamNumber / 100, delegate.teamNumber % 100];
+        NSString *htmlFile   = [[NSBundle mainBundle] pathForResource:@"mjpeg_viewer" ofType:@"html"];
+        NSString *jqueryFile = [[NSBundle mainBundle] pathForResource:@"jquery-2.1.1.min.js" ofType:nil];
         
-        NSString *html = [NSString stringWithFormat:@"<body style=\"padding: 0; margin: 0;\"><img src=\"%@\" width=\"%fpx\" height=\"%fpx\"/></body>", url, frame.size.width, frame.size.height];
+        NSString *htmlString   = [NSString stringWithContentsOfFile:htmlFile encoding:NSUTF8StringEncoding error:nil];
+        NSString *jqueryString = [NSString stringWithContentsOfFile:jqueryFile encoding:NSUTF8StringEncoding error:nil];
         
-        [self.cameraWebView loadHTMLString:html baseURL:nil];
+        htmlString = [htmlString stringByReplacingOccurrencesOfString:@"{jquery}" withString:jqueryString];
         
-        //NSURLRequest* urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        htmlString = [htmlString stringByReplacingOccurrencesOfString:@"{te}" withString:[NSString stringWithFormat:@"%i", delegate.teamNumber / 100]];
+        htmlString = [htmlString stringByReplacingOccurrencesOfString:@"{am}" withString:[NSString stringWithFormat:@"%i", delegate.teamNumber % 100]];
+        htmlString = [htmlString stringByReplacingOccurrencesOfString:@"{width}" withString:[NSString stringWithFormat:@"%i", (int) frame.size.width]];
+        htmlString = [htmlString stringByReplacingOccurrencesOfString:@"{height}" withString:[NSString stringWithFormat:@"%i", (int) frame.size.height]];
         
-        //[self.cameraWebView loadRequest:urlRequest];
+        NSLog(@"%f, %f", frame.size.width, frame.size.height);
+        
+        [self.cameraWebView loadHTMLString:htmlString baseURL:nil];
         
         NSLog(@"Reading camera");
         
-        /*
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://10.%i.%i.11/mjpg/video.mjpg?resolution=640x480&fps=30", delegate.teamNumber / 100, delegate.teamNumber % 100]]];
-        
-        [request setTimeoutInterval:3];
-        
-        //NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://141.89.114.58/cgi-bin/image320x240.jpg?dummy=1397745356691"]];
-        
-        [[NSURLConnection alloc] initWithRequest:request delegate:self];
-        */
-        
         didReadCamera = true;
     }
-}
-
-- (void)cancelWeb
-{
-    stopCamera = true;
-    didReadCamera = false;
-    
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Camera Error" message:[NSString stringWithFormat:@"We could not find the camera on its default IP of: 10.%i.%i.11.", delegate.teamNumber / 100, delegate.teamNumber % 100] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"Try Again", nil];
-    
-    [alert show];
-}
-
-- (void)webViewDidStartLoad:(UIWebView *)webView
-{
-    camTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(cancelWeb) userInfo:nil repeats:NO];
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView
-{
-    [camTimer invalidate];
 }
 
 - (IBAction)controlClick:(id)sender
@@ -327,32 +310,6 @@ static short ENABLED_BIT = 0x20;
     } else if (delegate.state == RobotEnabled || delegate.state == RobotWatchdogNotFed || delegate.state == RobotAutonomous)
     {
         data->control -= ENABLED_BIT;
-    }
-}
-
-- (BOOL)dataIsValidJPEG:(NSData *)data
-{
-    if (!data || data.length < 2) return false;
-    
-    NSInteger total = data.length;
-    const char *bytes = (const char *)[data bytes];
-    
-    return (bytes[0] == (char)0xFF &&
-            bytes[1] == (char)0xD8 &&
-            bytes[total - 2] == (char)0xFF &&
-            bytes[total - 1] == (char)0xD9);
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex == 1)
-    {
-        stopCamera = false;
-    } else
-    {
-        self.selectedJoystick.selectedSegmentIndex = 0;
-        
-        [self joystickChanged:self.selectedJoystick];
     }
 }
 

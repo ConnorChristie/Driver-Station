@@ -10,7 +10,7 @@
 
 #import "ControlView.h"
 
-@interface iMainDetailViewController : UIViewController <UISplitViewControllerDelegate, UIAlertViewDelegate, UIWebViewDelegate>
+@interface iMainDetailViewController : UIViewController <UISplitViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet ControlView *joystickView;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *selectedJoystick;

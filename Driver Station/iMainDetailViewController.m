@@ -21,13 +21,9 @@ static short ENABLED_BIT = 0x20;
     
     int widthDiff;
     
-    BOOL isVisible;
-    BOOL stopCamera;
-    BOOL didReadCamera;
-    
     BOOL loaded;
-    
-    NSTimer *camTimer;
+    BOOL isVisible;
+    BOOL didReadCamera;
 }
 
 @end
@@ -247,7 +243,7 @@ double currentSpeed[] = {0, 0};
             break;
     }
     
-    if (!stopCamera && !didReadCamera)
+    if (!didReadCamera)
     {
         CGRect frame = self.cameraWebView.frame;
         
@@ -261,55 +257,17 @@ double currentSpeed[] = {0, 0};
         
         htmlString = [htmlString stringByReplacingOccurrencesOfString:@"{te}" withString:[NSString stringWithFormat:@"%i", delegate.teamNumber / 100]];
         htmlString = [htmlString stringByReplacingOccurrencesOfString:@"{am}" withString:[NSString stringWithFormat:@"%i", delegate.teamNumber % 100]];
+        htmlString = [htmlString stringByReplacingOccurrencesOfString:@"{width}" withString:[NSString stringWithFormat:@"%i", (int) frame.size.width]];
+        htmlString = [htmlString stringByReplacingOccurrencesOfString:@"{height}" withString:[NSString stringWithFormat:@"%i", (int) frame.size.height]];
         
         NSLog(@"%f, %f", frame.size.width, frame.size.height);
         
-        //NSString *url = [NSString stringWithFormat:@"http://10.%i.%i.11/mjpg/video.mjpg?resolution=640x480&fps=30", delegate.teamNumber / 100, delegate.teamNumber % 100];
-        
-        //NSString *html = [NSString stringWithFormat:@"<body style=\"padding: 0; margin: 0;\"><img src=\"%@\" width=\"%fpx\" height=\"%fpx\"/></body>", url, frame.size.width, frame.size.height];
-        
         [self.cameraWebView loadHTMLString:htmlString baseURL:nil];
-        
-        //NSURLRequest* urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-        
-        //[self.cameraWebView loadRequest:urlRequest];
         
         NSLog(@"Reading camera");
         
-        /*
-         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://10.%i.%i.11/mjpg/video.mjpg?resolution=640x480&fps=30", delegate.teamNumber / 100, delegate.teamNumber % 100]]];
-         
-         [request setTimeoutInterval:3];
-         
-         //NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"http://141.89.114.58/cgi-bin/image320x240.jpg?dummy=1397745356691"]];
-         
-         [[NSURLConnection alloc] initWithRequest:request delegate:self];
-         */
-        
         didReadCamera = true;
     }
-}
-
-- (void)cancelWeb
-{
-    stopCamera = true;
-    didReadCamera = false;
-    
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Camera Error" message:[NSString stringWithFormat:@"We could not find the camera on its default IP of: 10.%i.%i.11.", delegate.teamNumber / 100, delegate.teamNumber % 100] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"Try Again", nil];
-    
-    [alert show];
-}
-
-- (void)webViewDidStartLoad:(UIWebView *)webView
-{
-    camTimer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(cancelWeb) userInfo:nil repeats:NO];
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView
-{
-    NSLog(@"Done");
-    
-    [camTimer invalidate];
 }
 
 - (IBAction)controlClick:(id)sender
@@ -324,21 +282,6 @@ double currentSpeed[] = {0, 0};
     } else if (delegate.state == RobotEnabled || delegate.state == RobotWatchdogNotFed || delegate.state == RobotAutonomous)
     {
         data->control -= ENABLED_BIT;
-    }
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex == 1)
-    {
-        stopCamera = false;
-    } else
-    {
-        //Display text on webview
-        
-        NSString *html = [NSString stringWithFormat:@"<body style=\"padding: 0; margin: 0; background: lightgray; text-align: center;\"><label style=\"position: relative; top: 48%%;\">Tap to refresh camera</label></body>"];
-        
-        [self.cameraWebView loadHTMLString:html baseURL:nil];
     }
 }
 

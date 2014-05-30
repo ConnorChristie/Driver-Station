@@ -259,7 +259,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <webView contentMode="scaleToFill" id="ieV-JJ-gB3">
-                                        <rect key="frame" x="194" y="38" width="181" height="152"/>
+                                        <rect key="frame" x="199" y="39" width="171" height="147"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <dataDetectorType key="dataDetectorTypes"/>
@@ -301,7 +301,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" tag="2" contentMode="scaleToFill" editable="NO" selectable="NO" id="znv-WK-4qp">
-                                <rect key="frame" x="20" y="61" width="528" height="198"/>
+                                <rect key="frame" x="20" y="61" width="528" height="189"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="0.93471891983695654" green="0.93471891983695654" blue="0.93471891983695654" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="22"/>
