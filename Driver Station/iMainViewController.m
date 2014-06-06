@@ -30,7 +30,6 @@ static int toPort   = 1110;
 // + 20 == Enabled
 
 /*
- 
  Joysticks 1 - 3
  
  Axis     | Code Reference
