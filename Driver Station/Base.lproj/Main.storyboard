@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="d1v-5g-bs2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C81f" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="d1v-5g-bs2">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
-        <!--Status View Controller - Status-->
+        <!--Status-->
         <scene sceneID="LD2-Wn-vLS">
             <objects>
                 <tableViewController id="sVk-BL-1CG" customClass="StatusViewController" sceneMemberID="viewController">
@@ -56,6 +57,24 @@
                                 <connections>
                                     <outlet property="control" destination="XA6-hr-sbd" id="wti-J5-LEL"/>
                                 </connections>
+                            </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RioSelect" id="rvc-QL-Cv8" customClass="ControlTableViewCell">
+                                <rect key="frame" x="0.0" y="99" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="rvc-QL-Cv8" id="cyZ-OY-l6x">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <segmentedControl opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" id="vGV-Ty-xAw">
+                                            <rect key="frame" x="21" y="7" width="281" height="29"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <segments>
+                                                <segment title="cRIO"/>
+                                                <segment title="roboRIO"/>
+                                            </segments>
+                                        </segmentedControl>
+                                    </subviews>
+                                </tableViewCellContentView>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Info" textLabel="Fci-7w-VjW" detailTextLabel="UcS-wP-JwK" style="IBUITableViewCellStyleValue1" id="W2d-CG-9j2">
                                 <rect key="frame" x="0.0" y="143" width="320" height="44"/>
@@ -145,7 +164,7 @@
             </objects>
             <point key="canvasLocation" x="1024" y="-631"/>
         </scene>
-        <!--Main View Controller - Driver Station-->
+        <!--Driver Station-->
         <scene sceneID="ZaC-pK-Nqt">
             <objects>
                 <tabBarController definesPresentationContext="YES" id="d1v-5g-bs2" customClass="MainViewController" sceneMemberID="viewController">
@@ -167,7 +186,7 @@
             </objects>
             <point key="canvasLocation" x="1024" y="24"/>
         </scene>
-        <!--Joystick View Controller - Joysticks-->
+        <!--Joysticks-->
         <scene sceneID="81g-YM-W3M">
             <objects>
                 <viewController id="8j8-25-0rf" customClass="JoystickViewController" sceneMemberID="viewController">
@@ -203,7 +222,7 @@
                                         <segments>
                                             <segment title="Joystick 1"/>
                                             <segment title="Joystick 2"/>
-                                            <segment title="Joystick 3"/>
+                                            <segment title="Joystick 1 | 2"/>
                                             <segment title="Camera"/>
                                         </segments>
                                         <connections>
@@ -269,7 +288,6 @@
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <tabBarItem key="tabBarItem" title="Joysticks" image="joystick-32.png" id="xzr-Jv-ghZ"/>
@@ -290,9 +308,9 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Nyc-eH-fcM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1399" y="24"/>
+            <point key="canvasLocation" x="1723" y="24"/>
         </scene>
-        <!--Logs View Controller - Logs-->
+        <!--Logs-->
         <scene sceneID="OJp-8z-R2P">
             <objects>
                 <viewController id="sr2-9E-rZz" customClass="LogsViewController" sceneMemberID="viewController">
@@ -316,16 +334,15 @@
                             </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Logs" image="menu-32.png" id="WZO-DV-I4a"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mDu-yw-dss" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1399" y="-383"/>
+            <point key="canvasLocation" x="1723" y="-383"/>
         </scene>
-        <!--View Controller - I/O-->
+        <!--I/O-->
         <scene sceneID="EYa-DF-iI8">
             <objects>
                 <viewController id="gTR-Ls-fjH" customClass="IOViewController" sceneMemberID="viewController">
@@ -469,7 +486,6 @@
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <tabBarItem key="tabBarItem" title="I/O" image="switch-32.png" id="GfH-9u-y26"/>
@@ -483,7 +499,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="K6I-pL-umq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1399" y="417"/>
+            <point key="canvasLocation" x="1723" y="417"/>
         </scene>
     </scenes>
     <resources>

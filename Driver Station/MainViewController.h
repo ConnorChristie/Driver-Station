@@ -22,7 +22,7 @@
 #import "Utilities.h"
 #import "PacketDef.h"
 
-@interface MainViewController : UITabBarController <CBCentralManagerDelegate, CBPeripheralDelegate, CBPeripheralManagerDelegate, UIAlertViewDelegate>
+@interface MainViewController : UITabBarController <UIAlertViewDelegate>
 
 @property (nonatomic) int autoTime;
 @property (nonatomic) int currentTime;
@@ -36,31 +36,13 @@
 @property (nonatomic) int analog3;
 @property (nonatomic) int analog4;
 
-@property (nonatomic) BOOL isHost;
-@property (nonatomic) BOOL blueConnected;
-@property (nonatomic) BOOL disallowPeripheral;
-
-@property (strong, nonatomic) CBCentralManager *cbManager;
-@property (strong, nonatomic) CBPeripheral *cbPeripheral;
-
-@property (strong, nonatomic) NSMutableData *cbData;
-
-@property (strong, nonatomic) NSString *cbReceiveData;
-
-@property (strong, nonatomic) CBPeripheralManager *cbpManager;
-
-@property (strong, nonatomic) CBMutableCharacteristic *transferCharacteristic;
-@property (strong, nonatomic) CBMutableCharacteristic *receiveCharacteristic;
-
-@property (strong, nonatomic) NSData *cbpData;
-@property (nonatomic, readwrite) NSInteger cbpDataIndex;
+@property (nonatomic, retain) NSString *ipFormat;
 
 - (void)stopTimer;
 - (void)closeSockets;
 
 - (void)changeTeam;
 - (void)updateAndSend;
-- (void)blueJoystick:(BOOL)status;
 - (void)changeControl:(BOOL)enable;
 
 -(struct RobotDataPacket*)getInputPacket;

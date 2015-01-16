@@ -17,10 +17,12 @@
 #import "CRCVerifier.h"
 #import "TransferService.h"
 
+//These bits may be different with the new protocol
 static short ENABLED_BIT    = 0x20;
 static short AUTONOMOUS_BIT = 0x50;
 static short TELEOP_BIT     = 0x40;
 
+//Ports are probably different, I thought I saw it somewhere
 static int fromPort = 1150;
 static int toPort   = 1110;
 
@@ -109,11 +111,10 @@ static int toPort   = 1110;
     verifier = [[CRCVerifier alloc] init];
 	[verifier buildTable];
     
-    //self.cbManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-    //self.cbData    = [[NSMutableData alloc] init];
-    
     motion = [[CMMotionManager alloc] init];
     motion.accelerometerUpdateInterval  = 1.0 / 10.0; // Update at 10Hz
+    
+    _ipFormat = @"10.%i.%i.20";
     
     if (motion.accelerometerAvailable)
     {
@@ -132,445 +133,13 @@ static int toPort   = 1110;
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [self.cbManager stopScan];
+    
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
 }
-
-- (void)blueJoystick:(BOOL)status
-{
-    /*
-    if (status)
-    {
-        if (self.blueConnected)
-        {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Bluetooth Joystick" message:@"Are you sure you want to disconnect the currently connected phone?" delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
-            
-            alert.tag = 3;
-            
-            [alert show];
-            
-            return;
-        }
-        
-        [self.cbManager stopScan];
-        [self cleanup];
-        
-        self.cbpManager = [[CBPeripheralManager alloc] initWithDelegate:self queue:nil];
-        
-        [self.cbpManager startAdvertising:@{ CBAdvertisementDataServiceUUIDsKey : @[[CBUUID UUIDWithString:TRANSFER_SERVICE_UUID]] }];
-        
-        currentAlert = [[UIAlertView alloc] initWithTitle:@"Bluetooth Joystick" message:@"Waiting for the host to allow your connection." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil];
-        
-        currentAlert.tag = 1;
-        
-        [currentAlert show];
-    } else
-    {
-        BOOL eomSent = [self.cbpManager updateValue:[@"EOM" dataUsingEncoding:NSUTF8StringEncoding] forCharacteristic:self.transferCharacteristic onSubscribedCentrals:nil];
-        
-        if (eomSent)
-        {
-            NSLog(@"Sent: EOM");
-        }
-        
-        [self.cbpManager stopAdvertising];
-        
-        self.cbPeripheral = nil;
-        
-        [self.cbManager scanForPeripheralsWithServices:@[[CBUUID UUIDWithString:TRANSFER_SERVICE_UUID]] options:@{ CBCentralManagerScanOptionAllowDuplicatesKey : @YES }];
-    }
-    */
-}
-
-/*
- 
- Being a peripheral
- 
- */
-
-- (void)peripheralManagerDidUpdateState:(CBPeripheralManager *)peripheral
-{
-    if (peripheral.state != CBPeripheralManagerStatePoweredOn)
-    {
-        return;
-    }
-    
-    if (peripheral.state == CBPeripheralManagerStatePoweredOn)
-    {
-        self.transferCharacteristic = [[CBMutableCharacteristic alloc] initWithType:[CBUUID UUIDWithString:TRANSFER_CHARACTERISTIC_UUID]
-                                                                         properties:CBCharacteristicPropertyNotify
-                                                                              value:nil
-                                                                        permissions:CBAttributePermissionsReadable];
-        
-        self.receiveCharacteristic = [[CBMutableCharacteristic alloc] initWithType:[CBUUID UUIDWithString:RECEIVE_CHARACTERISTIC_UUID]
-                                                                        properties:CBCharacteristicPropertyWriteWithoutResponse
-                                                                             value:nil
-                                                                       permissions:CBAttributePermissionsWriteable];
-        
-        CBMutableService *transferService = [[CBMutableService alloc] initWithType:[CBUUID UUIDWithString:TRANSFER_SERVICE_UUID] primary:YES];
-        
-        transferService.characteristics = @[_transferCharacteristic, _receiveCharacteristic];
-        
-        [self.cbpManager addService:transferService];
-    }
-}
-
-- (void)peripheralManager:(CBPeripheralManager *)peripheral central:(CBCentral *)central didSubscribeToCharacteristic:(CBCharacteristic *)characteristic
-{
-    //self.blueConnected = true;
-    
-    self.cbpData = [@"Hello from the driver station!" dataUsingEncoding:NSUTF8StringEncoding];
-    self.cbpDataIndex = 0;
-    
-    [self sendData];
-}
-
-- (void)peripheralManagerIsReadyToUpdateSubscribers:(CBPeripheralManager *)peripheral
-{
-    [self sendData];
-}
-
-- (void)sendData
-{
-    NSData *chunk = [NSData dataWithBytes:self.cbpData.bytes + self.cbpDataIndex length:self.cbpData.length];
-    
-    BOOL didSend = [self.cbpManager updateValue:chunk forCharacteristic:self.transferCharacteristic onSubscribedCentrals:nil];
-    
-    // If it didn't work, drop out and wait for the callback
-    if (!didSend)
-    {
-        return;
-    }
-    
-    NSString *stringFromData = [[NSString alloc] initWithData:chunk encoding:NSUTF8StringEncoding];
-    
-    NSLog(@"Sent: %@", stringFromData);
-}
-
-- (void)peripheralManager:(CBPeripheralManager *)peripheral didReceiveWriteRequests:(NSArray *)requests
-{
-    self.cbReceiveData = [[NSString alloc] initWithData:((CBATTRequest *)[requests objectAtIndex:0]).value encoding:NSUTF8StringEncoding];
-    
-    if ([self.cbReceiveData isEqualToString:@"connect"])
-    {
-        self.blueConnected = true;
-        
-        [currentAlert dismissWithClickedButtonIndex:0 animated:true];
-    } else if ([self.cbReceiveData isEqualToString:@"disconnect"])
-    {
-        [self blueJoystick:false];
-        
-        ((JoystickViewController *)self.viewControllers[1]).selectedJoystick.selectedSegmentIndex = 0;
-        
-        [currentAlert dismissWithClickedButtonIndex:0 animated:YES];
-        
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Bluetooth Joystick" message:@"Your attempt to become a bluetooth joystick has been denied." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        
-        [alert show];
-    } else if ([self.cbReceiveData isEqualToString:@"disconnect_n"])
-    {
-        [self blueJoystick:false];
-        
-        ((JoystickViewController *)self.viewControllers[1]).selectedJoystick.selectedSegmentIndex = 0;
-    }
-}
-
-- (void)peripheralManager:(CBPeripheralManager *)peripheral central:(CBCentral *)central didUnsubscribeFromCharacteristic:(CBCharacteristic *)characteristic
-{
-    self.blueConnected = false;
-}
-
-/*
- 
- Stop being peripheral
- 
- */
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (alertView.tag == 1 && !self.blueConnected)
-    {
-        self.cbpData = [@"disconnect_n" dataUsingEncoding:NSUTF8StringEncoding];
-        self.cbpDataIndex = 0;
-        
-        [self sendData];
-        
-        /*
-        self.blueConnected = false;
-        
-        [self blueJoystick:false];
-        
-        ((JoystickViewController *)self.viewControllers[1]).selectedJoystick.selectedSegmentIndex = 0;
-         */
-    } else if (alertView.tag == 2)
-    {
-        if (buttonIndex == 0)
-        {
-            //self.disallowPeripheral = true;
-            
-            [self.cbPeripheral writeValue:[@"disconnect" dataUsingEncoding:NSUTF8StringEncoding]
-                        forCharacteristic:self.receiveCharacteristic
-                                     type:CBCharacteristicWriteWithoutResponse];
-        } else
-        {
-            [self.cbPeripheral writeValue:[@"connect" dataUsingEncoding:NSUTF8StringEncoding]
-                        forCharacteristic:self.receiveCharacteristic
-                                     type:CBCharacteristicWriteWithoutResponse];
-            
-            self.blueConnected = true;
-        }
-    } else if (alertView.tag == 3)
-    {
-        if (buttonIndex == 0)
-        {
-            //No
-            
-            ((JoystickViewController *)self.viewControllers[1]).selectedJoystick.selectedSegmentIndex = 0;
-        } else if (buttonIndex == 1)
-        {
-            //Yes
-            
-            NSLog(@"Yes");
-            
-            ((JoystickViewController *)self.viewControllers[1]).selectedJoystick.selectedSegmentIndex = 0;
-            
-            self.cbpData = [@"disconnect_n" dataUsingEncoding:NSUTF8StringEncoding];
-            self.cbpDataIndex = 0;
-            
-            [self sendData];
-            
-            self.blueConnected = false;
-            
-            [self blueJoystick:true];
-        }
-    }
-}
-
-/*
- 
- Being a Manager
- 
- */
-
-- (void)centralManagerDidUpdateState:(CBCentralManager *)central
-{
-    if (central.state == CBCentralManagerStatePoweredOn)
-    {
-        [self.cbManager scanForPeripheralsWithServices:@[[CBUUID UUIDWithString:TRANSFER_SERVICE_UUID]] options:@{ CBCentralManagerScanOptionAllowDuplicatesKey : @YES }];
-        
-        NSLog(@"Scanning started");
-    } else
-    {
-        NSLog(@"No Bluetooth");
-    }
-}
-
-- (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
-{
-    NSLog(@"Discovered %@ at %@", peripheral.name, RSSI);
-    
-    if (self.cbPeripheral != peripheral)
-    {
-        [self.cbManager stopScan];
-        
-        [((JoystickViewController *)self.viewControllers[1]).selectedJoystick setEnabled:false forSegmentAtIndex:2];
-        
-        currentAlert = [[UIAlertView alloc] initWithTitle:@"Bluetooth Joystick" message:@"A bluetooth joystick is attempting to connect, do you want to allow?" delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
-        
-        currentAlert.tag = 2;
-        
-        [currentAlert show];
-        
-        self.cbPeripheral = peripheral;
-        
-        [self.cbManager connectPeripheral:peripheral options:nil];
-    }
-}
-
-- (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
-{
-    [self cleanup];
-}
-
-- (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
-{
-    NSLog(@"Connected");
-    
-    [self.cbManager stopScan];
-    
-    NSLog(@"Scanning stopped");
-    
-    [self.cbData setLength:0];
-    
-    peripheral.delegate = self;
-    
-    [peripheral discoverServices:@[[CBUUID UUIDWithString:TRANSFER_SERVICE_UUID]]];
-}
-
-- (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error
-{
-    if (error)
-    {
-        [self cleanup];
-        
-        return;
-    }
-    
-    for (CBService *service in peripheral.services)
-    {
-        [peripheral discoverCharacteristics:@[[CBUUID UUIDWithString:TRANSFER_CHARACTERISTIC_UUID], [CBUUID UUIDWithString:RECEIVE_CHARACTERISTIC_UUID]] forService:service];
-    }
-}
-
-- (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
-{
-    if (error)
-    {
-        [self cleanup];
-        
-        return;
-    }
-    
-    for (CBCharacteristic *characteristic in service.characteristics)
-    {
-        if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:TRANSFER_CHARACTERISTIC_UUID]])
-        {
-            [peripheral setNotifyValue:YES forCharacteristic:characteristic];
-            
-            self.transferCharacteristic = (CBMutableCharacteristic *) characteristic;
-        } else if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:RECEIVE_CHARACTERISTIC_UUID]])
-        {
-            self.receiveCharacteristic = (CBMutableCharacteristic *) characteristic;
-        }
-    }
-    
-    /*
-    if (self.disallowPeripheral)
-    {
-        NSLog(@"Hello");
-        
-        [self.cbPeripheral writeValue:[@"disconnect" dataUsingEncoding:NSUTF8StringEncoding]
-                    forCharacteristic:self.receiveCharacteristic
-                                 type:CBCharacteristicWriteWithoutResponse];
-        
-        self.disallowPeripheral = false;
-        
-        return;
-    }
-    */
-    
-    //self.blueConnected = true;
-}
-
-- (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
-{
-    if (error)
-    {
-        NSLog(@"Error");
-        
-        return;
-    }
-    
-    NSString *stringFromData = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
-    
-    NSLog(@"Data: %@", stringFromData);
-    
-    if ([stringFromData isEqualToString:@"EOM"])
-    {
-        if (currentAlert != nil)
-        {
-            [currentAlert dismissWithClickedButtonIndex:1 animated:true];
-            
-            currentAlert = nil;
-        }
-        
-        [peripheral setNotifyValue:NO forCharacteristic:characteristic];
-        
-        [self.cbManager cancelPeripheralConnection:peripheral];
-    } else if ([stringFromData isEqualToString:@"disconnect_n"])
-    {
-        [currentAlert dismissWithClickedButtonIndex:0 animated:YES];
-        
-        [self.cbPeripheral writeValue:[@"disconnect_n" dataUsingEncoding:NSUTF8StringEncoding]
-                    forCharacteristic:self.receiveCharacteristic
-                                 type:CBCharacteristicWriteWithoutResponse];
-        
-        //self.disallowPeripheral = false;
-        
-        //self.blueConnected = false;
-    }
-    
-    [self.cbData appendData:characteristic.value];
-}
-
-- (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
-{
-    if (![characteristic.UUID isEqual:[CBUUID UUIDWithString:TRANSFER_CHARACTERISTIC_UUID]] && ![characteristic.UUID isEqual:[CBUUID UUIDWithString:RECEIVE_CHARACTERISTIC_UUID]])
-    {
-        return;
-    }
-    
-    if (characteristic.isNotifying)
-    {
-        NSLog(@"Notification began on %@", characteristic);
-    } else
-    {
-        [self.cbManager cancelPeripheralConnection:peripheral];
-    }
-}
-
-- (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
-{
-    self.cbPeripheral = nil;
-    
-    [self.cbManager scanForPeripheralsWithServices:@[[CBUUID UUIDWithString:TRANSFER_SERVICE_UUID]] options:@{ CBCentralManagerScanOptionAllowDuplicatesKey : @YES }];
-}
-
-- (void)cleanup
-{
-    [((JoystickViewController *)self.viewControllers[1]).selectedJoystick setEnabled:true forSegmentAtIndex:2];
-    
-    self.blueConnected = false;
-    self.isHost = false;
-    
-    if (self.cbPeripheral.services != nil)
-    {
-        for (CBService *service in self.cbPeripheral.services)
-        {
-            if (service.characteristics != nil)
-            {
-                for (CBCharacteristic *characteristic in service.characteristics)
-                {
-                    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:TRANSFER_CHARACTERISTIC_UUID]] || [characteristic.UUID isEqual:[CBUUID UUIDWithString:RECEIVE_CHARACTERISTIC_UUID]])
-                    {
-                        if (characteristic.isNotifying)
-                        {
-                            [self.cbPeripheral setNotifyValue:NO forCharacteristic:characteristic];
-                            
-                            self.cbPeripheral = nil;
-                            
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    [self.cbManager cancelPeripheralConnection:self.cbPeripheral];
-    
-    self.cbPeripheral = nil;
-}
-
-/*
- 
- Stop being manager
- 
- */
 
 - (void)startTimer
 {
@@ -582,6 +151,7 @@ static int toPort   = 1110;
     [self startListener];
 	[self startClient];
     
+    //Sets to teleop disabled
     toRobotData.control = TELEOP_BIT;
     toRobotData.packetIndex = 0x00;
     
@@ -617,6 +187,7 @@ static int toPort   = 1110;
 	close(outputSocket);
 }
 
+//Update the match time, called every second
 - (void)updateTime
 {
     self.currentTime++;
@@ -627,9 +198,11 @@ static int toPort   = 1110;
     }
 }
 
+//Setting up the packets and ip
+//Sets the teamId to the team number, and version to version of driver station
 - (BOOL)setupClient
 {
-    ipAddress = [NSString stringWithFormat:@"10.%i.%i.2", delegate.teamNumber / 100, delegate.teamNumber % 100];
+    ipAddress = [NSString stringWithFormat:_ipFormat, delegate.teamNumber / 100, delegate.teamNumber % 100];
     
     //ipAddress = @"127.0.0.1";
     
@@ -647,6 +220,7 @@ static int toPort   = 1110;
     return true;
 }
 
+//Listens for commands that the robot sends us
 - (BOOL)startListener
 {
     if ((inputSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
@@ -659,7 +233,7 @@ static int toPort   = 1110;
 	memset((char *) &myself, 0, sizeof(myself));
     
 	myself.sin_family = AF_INET;
-	myself.sin_port = htons(fromPort);
+	myself.sin_port = htons(fromPort); //The port from the robot
 	myself.sin_addr.s_addr = htonl(INADDR_ANY);
     
 	fcntl(inputSocket, F_SETFL, O_NONBLOCK);
@@ -676,6 +250,7 @@ static int toPort   = 1110;
     return TRUE;
 }
 
+//Sets up the robot to send commands
 -(BOOL)startClient
 {
 	if ((outputSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
@@ -688,7 +263,7 @@ static int toPort   = 1110;
 	memset((char *) &robotMain, 0, sizeof(robotMain));
     
 	robotMain.sin_family = AF_INET;
-	robotMain.sin_port = htons(toPort);
+	robotMain.sin_port = htons(toPort); //The port to the robot
     
 	if (inet_aton([ipAddress cStringUsingEncoding:NSStringEncodingConversionAllowLossy], &robotMain.sin_addr) == 0)
 	{
@@ -706,11 +281,13 @@ static int toPort   = 1110;
 {
     if (enable && delegate.state == RobotDisabled)
     {
+        //Starts the match timer
         secondTimer = [NSTimer timerWithTimeInterval:1.00 target:self selector:@selector(updateTime)
                                             userInfo:nil repeats:YES];
         
         [[NSRunLoop currentRunLoop] addTimer:secondTimer forMode:NSDefaultRunLoopMode];
         
+        //Sets the control bit to enabled
         toRobotData.control += ENABLED_BIT;
     } else if (!enable && (delegate.state == RobotEnabled || delegate.state == RobotWatchdogNotFed || delegate.state == RobotAutonomous))
     {
@@ -719,27 +296,23 @@ static int toPort   = 1110;
         secondTimer = nil;
         self.currentTime = 0;
         
+        //Sets the control bit to disabled
         toRobotData.control -= ENABLED_BIT;
     }
 }
 
 - (void)updateAndSend
 {
-    if (!self.isHost && self.blueConnected && ((JoystickViewController *)self.viewControllers[1]).selectedJoystick.selectedSegmentIndex == 2)
-    {
-        NSLog(@"Received: %@", self.cbReceiveData);
-    } else
-    {
-        [self updatePacket];
-        
-        ssize_t se = sendto(outputSocket, &toRobotData, 1024, 0, (struct sockaddr *)&robotMain, sizeof(robotMain));
-        ssize_t re = recvfrom(inputSocket, &fromRobotData, 1152, 0, nil, 0);
-        
-        [self updateUI:(se != -1 && re != -1)];
-    }
+    [self updatePacket];
+    
+    ssize_t se = sendto(outputSocket, &toRobotData, 1024, 0, (struct sockaddr *)&robotMain, sizeof(robotMain));
+    ssize_t re = recvfrom(inputSocket, &fromRobotData, 1152, 0, nil, 0);
+    
+    [self updateUI:(se != -1 && re != -1)];
     
     //From robot data length
     
+    //Gets the user lines
     NSString *userLine1 = [self charsToString:fromRobotData.userLine1];
     NSString *userLine2 = [self charsToString:fromRobotData.userLine2];
     NSString *userLine3 = [self charsToString:fromRobotData.userLine3];
@@ -775,6 +348,7 @@ static int toPort   = 1110;
 	{
 		if (missed >= 30) //600 ms
 		{
+            //Robot has not contacted us in over 600 ms
 			delegate.state = RobotNotConnected;
 		}
         
@@ -791,17 +365,27 @@ static int toPort   = 1110;
         
 		if ((toRobotData.control & ENABLED_BIT) == ENABLED_BIT)
 		{
+            //Sending enabled bit (we are telling the robot to become enabled)
+            
             if ((fromRobotData.control & ENABLED_BIT) == ENABLED_BIT)
             {
+                //Received the enable bit (they are telling us they enabled successfully)
+                
                 if ((fromRobotData.control & AUTONOMOUS_BIT) == AUTONOMOUS_BIT)
                 {
+                    //Telling us we are in auto
+                    
                     delegate.state = RobotAutonomous;
                 } else if ((fromRobotData.control & TELEOP_BIT) == TELEOP_BIT)
                 {
+                    //Telling us we are in teleop
+                    
                     delegate.state = RobotEnabled;
                 }
             } else
             {
+                //If we do not receive the same bit back we have an error (watchdog not fed)
+                
                 delegate.state = RobotWatchdogNotFed;
             }
 		} else
@@ -809,24 +393,16 @@ static int toPort   = 1110;
 			delegate.state = RobotDisabled;
 		}
 	}
-    
-    if (self.blueConnected)
-    {
-        NSString *toBlueString = [NSString stringWithFormat:@"%i:%.2X.%.2X", delegate.state, fromRobotData.batteryVolts, fromRobotData.batteryMV];
-    
-        [self.cbPeripheral writeValue:[toBlueString dataUsingEncoding:NSUTF8StringEncoding]
-                forCharacteristic:self.receiveCharacteristic
-                             type:CBCharacteristicWriteWithoutResponse];
-    }
 }
 
 -(void)updatePacket
 {
+    //Sets packet id to prev_id + 1
 	[Utilities setShort:&toRobotData.packetIndex value:[Utilities getShort:&toRobotData.packetIndex] + 1];
     
     switch (self.teamColor)
     {
-        case 0:
+        case 0: //Set the teams color, either char R or B
             toRobotData.dsID_Alliance = 'R'; break;
         case 1:
             toRobotData.dsID_Alliance = 'B'; break;
@@ -834,7 +410,7 @@ static int toPort   = 1110;
     
     switch (self.teamIndex)
     {
-        case 0:
+        case 0: //Set the team position 1-3
             toRobotData.dsID_Position = 0x31; break;
         case 1:
             toRobotData.dsID_Position = 0x32; break;
@@ -849,6 +425,7 @@ static int toPort   = 1110;
     
     uint16_t buttonsOut = 0;
     
+    //OR each button whether it is enabled or not.
     buttonsOut |= joystickController.button1Sel ? (1 << 0) : 0;
     buttonsOut |= joystickController.button2Sel ? (1 << 1) : 0;
     buttonsOut |= joystickController.button3Sel ? (1 << 2) : 0;
@@ -856,14 +433,30 @@ static int toPort   = 1110;
     buttonsOut |= joystickController.button5Sel ? (1 << 4) : 0;
     buttonsOut |= joystickController.button6Sel ? (1 << 5) : 0;
     
+    uint16_t buttonsOut1 = 0;
+    uint16_t buttonsOut2 = 0;
+    
+    //OR each button whether it is enabled or not.
+    buttonsOut1 |= joystickController.button1Sel ? (1 << 0) : 0;
+    buttonsOut1 |= joystickController.button3Sel ? (1 << 1) : 0;
+    buttonsOut1 |= joystickController.button5Sel ? (1 << 2) : 0;
+    
+    //OR each button whether it is enabled or not.
+    buttonsOut2 |= joystickController.button2Sel ? (1 << 0) : 0;
+    buttonsOut2 |= joystickController.button4Sel ? (1 << 1) : 0;
+    buttonsOut2 |= joystickController.button6Sel ? (1 << 2) : 0;
+    
     switch (joystickController.selectedJoystick.selectedSegmentIndex)
     {
         case 0:
-        case 3:
+        case 3: //Case 0 and 3 (joystick 1 and camera)
             toRobotData.stick0.stick0Axes[0] = [(NSNumber *)[stickArray objectAtIndex:0] intValue];
             toRobotData.stick0.stick0Axes[1] = [(NSNumber *)[stickArray objectAtIndex:1] intValue];
             toRobotData.stick0.stick0Axes[2] = [(NSNumber *)[stickArray objectAtIndex:2] intValue];
             toRobotData.stick0.stick0Axes[3] = [(NSNumber *)[stickArray objectAtIndex:3] intValue];
+            
+            //Joystick 1
+            //Sets each of the 4 axes to their value, (Left stick X & Y, Right stick X & Y)
             
             [Utilities setShort:&toRobotData.stick0Buttons value:buttonsOut];
             
@@ -874,29 +467,24 @@ static int toPort   = 1110;
             toRobotData.stick1.stick1Axes[2] = [(NSNumber *)[stickArray objectAtIndex:2] intValue];
             toRobotData.stick1.stick1Axes[3] = [(NSNumber *)[stickArray objectAtIndex:3] intValue];
             
+            //Joystick 2
+            //Sets each of the 4 axes to their value, (Left stick X & Y, Right stick X & Y)
+            
             [Utilities setShort:&toRobotData.stick1Buttons value:buttonsOut];
             
             break;
         case 2:
-            toRobotData.stick2.stick2Axes[0] = [(NSNumber *)[stickArray objectAtIndex:0] intValue];
-            toRobotData.stick2.stick2Axes[1] = [(NSNumber *)[stickArray objectAtIndex:1] intValue];
-            toRobotData.stick2.stick2Axes[2] = [(NSNumber *)[stickArray objectAtIndex:2] intValue];
-            toRobotData.stick2.stick2Axes[3] = [(NSNumber *)[stickArray objectAtIndex:3] intValue];
+            toRobotData.stick0.stick0Axes[0] = [(NSNumber *)[stickArray objectAtIndex:0] intValue];
+            toRobotData.stick0.stick0Axes[1] = [(NSNumber *)[stickArray objectAtIndex:1] intValue];
+            toRobotData.stick1.stick1Axes[0] = [(NSNumber *)[stickArray objectAtIndex:2] intValue];
+            toRobotData.stick1.stick1Axes[1] = [(NSNumber *)[stickArray objectAtIndex:3] intValue];
             
-            [Utilities setShort:&toRobotData.stick2Buttons value:buttonsOut];
+            //Joystick 1 & 2, (Left stick is joystick 1, right stick is joystick 2)
             
-            break;
-            /*
-        case 3:
-            toRobotData.stick3.stick3Axes[0] = [(NSNumber *)[stickArray objectAtIndex:0] intValue];
-            toRobotData.stick3.stick3Axes[1] = [(NSNumber *)[stickArray objectAtIndex:1] intValue];
-            toRobotData.stick3.stick3Axes[2] = [(NSNumber *)[stickArray objectAtIndex:2] intValue];
-            toRobotData.stick3.stick3Axes[3] = [(NSNumber *)[stickArray objectAtIndex:3] intValue];
-            
-            [Utilities setShort:&toRobotData.stick3Buttons value:buttonsOut];
+            [Utilities setShort:&toRobotData.stick0Buttons value:buttonsOut1];
+            [Utilities setShort:&toRobotData.stick1Buttons value:buttonsOut2];
             
             break;
-             */
     }
     
     double x = acceleration.x;
@@ -907,14 +495,16 @@ static int toPort   = 1110;
     y *= (y < 0 ? 128 : 127);
     z *= (z < 0 ? 128 : 127);
     
-    toRobotData.stick3.stick3Axes[0] = (int)x;
-    toRobotData.stick3.stick3Axes[1] = (int)y;
-    toRobotData.stick3.stick3Axes[2] = (int)z;
+    //Send accelerometer data as joystick 3
     
+    toRobotData.stick3.stick3Axes[0] = (int) x;
+    toRobotData.stick3.stick3Axes[1] = (int) y;
+    toRobotData.stick3.stick3Axes[2] = (int) z;
+    
+    //Get change in acceleration for every direction
     double xyz = sqrt(x * x + y * y + z * z);
     
-    //NSLog(@"Fall: %f, %f", prevXYZ, xyz - prevXYZ);
-    
+    //Find out if acceleration changed very rapidly, probably from a fall...
     if (prevXYZ < 20)
     {
         if (xyz - prevXYZ > 200)
@@ -938,6 +528,7 @@ static int toPort   = 1110;
     
     //NSLog(@"Accel: %i", toRobotData.stick3.stick3Axes[0]);
     
+    //Send over analog data
     [Utilities setShort:&toRobotData.analog1 value:(uint16_t)self.analog1];
     [Utilities setShort:&toRobotData.analog2 value:(uint16_t)self.analog2];
     [Utilities setShort:&toRobotData.analog3 value:(uint16_t)self.analog3];
@@ -965,15 +556,16 @@ static int toPort   = 1110;
 		}
 	}
     
+    //I do not know where this comes from but it seems to only work with this bit added
     toRobotData.control |= 0x04; //Resync
     
+    //Set the digital out
 	toRobotData.dsDigitalIn = dI;
 	toRobotData.CRC = 0;
     
+    //Calculate the crc hash for the packet
 	uint32_t crc = [verifier verify:&toRobotData length:1024];
     
-    //NSLog(@"%X", crc);
-	
 	[Utilities setInt:&toRobotData.CRC value:crc];
 }
 

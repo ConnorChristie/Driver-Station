@@ -17,7 +17,6 @@
 				$("#error").text("Loading Camera...");
 				
 				$("#stream").attr("src", "http://10.{te}.{am}.11/mjpg/video.mjpg?resolution=640x480&fps=30");
-				//$("#stream").attr("src", "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQ1kRNwIlheGr3Hmd84eUHWqBcsKPGazvomoyEbEPvHq4BrZDxLgg");
                 
                 timeout = setTimeout(function() {
                     //Cam did not load
@@ -32,7 +31,7 @@
 					$("#stream").css({"display":"block"});
 					$("#errordiv").css({"display":"none"});
                                   
-                  clearTimeout(timeout);
+                    clearTimeout(timeout);
 				}).error(function() {
 					$("#error").html("Error Loading Camera<br/>Tap to Refresh");
 				
@@ -45,7 +44,7 @@
 		</script>
 	</head>
 	<body style="padding: 0; margin: 0;">
-		<div id="errordiv" style="display: none; background: lightgray; height: 100%; text-align: center;">
+		<div id="errordiv" style="background: lightgray; height: 100%; text-align: center;">
 			<label id="error" style="position: relative; top: 40%;">Tap to refresh camera</label>
 		</div>
 		

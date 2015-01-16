@@ -55,6 +55,8 @@
 		B3A378DE18FF82BF00AE438E /* UI Sidewalk 640x480.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B3A378DD18FF82BF00AE438E /* UI Sidewalk 640x480.jpg */; };
 		B3E1B3F21926AAAF002380F9 /* LogsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E1B3F11926AAAF002380F9 /* LogsViewController.m */; };
 		B3E1B3F41926ABFE002380F9 /* menu-32.png in Resources */ = {isa = PBXBuildFile; fileRef = B3E1B3F31926ABFE002380F9 /* menu-32.png */; };
+		B3FE10A719D351EC005AB2CB /* BluetoothController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3FE10A619D351EC005AB2CB /* BluetoothController.m */; };
+		B3FE10A919D35425005AB2CB /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3FE10A819D35425005AB2CB /* GameKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,6 +136,9 @@
 		B3E1B3F01926AAAF002380F9 /* LogsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogsViewController.h; sourceTree = "<group>"; };
 		B3E1B3F11926AAAF002380F9 /* LogsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogsViewController.m; sourceTree = "<group>"; };
 		B3E1B3F31926ABFE002380F9 /* menu-32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu-32.png"; sourceTree = "<group>"; };
+		B3FE10A519D351EC005AB2CB /* BluetoothController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BluetoothController.h; sourceTree = "<group>"; };
+		B3FE10A619D351EC005AB2CB /* BluetoothController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BluetoothController.m; sourceTree = "<group>"; };
+		B3FE10A819D35425005AB2CB /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +146,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3FE10A919D35425005AB2CB /* GameKit.framework in Frameworks */,
 				B39F00E318FEDD2B008706F4 /* CoreBluetooth.framework in Frameworks */,
 				B3A159BC18AD8CD00099D64A /* CoreGraphics.framework in Frameworks */,
 				B3A159BE18AD8CD00099D64A /* UIKit.framework in Frameworks */,
@@ -294,6 +300,8 @@
 				B34BBD4518E7304800D8F2D5 /* BorderButton.m */,
 				B307055918E3372C0013C72F /* ControlTableViewCell.h */,
 				B307055A18E3372C0013C72F /* ControlTableViewCell.m */,
+				B3FE10A519D351EC005AB2CB /* BluetoothController.h */,
+				B3FE10A619D351EC005AB2CB /* BluetoothController.m */,
 			);
 			name = Universal;
 			sourceTree = "<group>";
@@ -320,6 +328,7 @@
 		B3A159B818AD8CD00099D64A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B3FE10A819D35425005AB2CB /* GameKit.framework */,
 				B39F00E218FEDD2B008706F4 /* CoreBluetooth.framework */,
 				B3A159B918AD8CD00099D64A /* Foundation.framework */,
 				B3A159BB18AD8CD00099D64A /* CoreGraphics.framework */,
@@ -520,6 +529,7 @@
 				B33F079B190FD8C60003043F /* iMainDetailViewController.m in Sources */,
 				B39FC2D0192BBD13008EDE98 /* jquery-2.1.1.min.js in Sources */,
 				B3A159C618AD8CD00099D64A /* main.m in Sources */,
+				B3FE10A719D351EC005AB2CB /* BluetoothController.m in Sources */,
 				B307055B18E3372C0013C72F /* ControlTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -648,7 +658,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Driver Station/Driver Station-Prefix.pch";
 				INFOPLIST_FILE = "Driver Station/Driver Station-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -664,7 +674,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Driver Station/Driver Station-Prefix.pch";
 				INFOPLIST_FILE = "Driver Station/Driver Station-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";

@@ -13,8 +13,6 @@
 
 #import <objc/message.h>
 
-static short ENABLED_BIT = 0x20;
-
 @interface JoystickViewController ()
 {
     AppDelegate *delegate;
@@ -22,7 +20,6 @@ static short ENABLED_BIT = 0x20;
     int widthDiff;
     
     BOOL isVisible;
-    BOOL stopCamera;
     BOOL didReadCamera;
     
     BOOL loaded;
@@ -169,23 +166,30 @@ static short ENABLED_BIT = 0x20;
     
     if (joy.selectedSegmentIndex == 2)
     {
-        [((MainViewController *) self.parentViewController) blueJoystick:true];
+        [self.button1 setTitle:@"1" forState:UIControlStateNormal];
+        [self.button3 setTitle:@"2" forState:UIControlStateNormal];
+        [self.button5 setTitle:@"3" forState:UIControlStateNormal];
         
-        self.cameraWebView.hidden = true;
-        
-        stopCamera = false;
+        [self.button2 setTitle:@"1" forState:UIControlStateNormal];
+        [self.button4 setTitle:@"2" forState:UIControlStateNormal];
+        [self.button6 setTitle:@"3" forState:UIControlStateNormal];
     } else if (joy.selectedSegmentIndex == 3)
     {
-        [((MainViewController *) self.parentViewController) blueJoystick:false];
+        //[((MainViewController *) self.parentViewController) blueJoystick:false];
         
         self.cameraWebView.hidden = false;
     } else
     {
-        [((MainViewController *) self.parentViewController) blueJoystick:false];
+        //[((MainViewController *) self.parentViewController) blueJoystick:false];
         
         self.cameraWebView.hidden = true;
         
-        stopCamera = false;
+        [self.button1 setTitle:@"1" forState:UIControlStateNormal];
+        [self.button2 setTitle:@"2" forState:UIControlStateNormal];
+        [self.button3 setTitle:@"3" forState:UIControlStateNormal];
+        [self.button4 setTitle:@"4" forState:UIControlStateNormal];
+        [self.button5 setTitle:@"5" forState:UIControlStateNormal];
+        [self.button6 setTitle:@"6" forState:UIControlStateNormal];
     }
 }
 
@@ -240,33 +244,28 @@ static short ENABLED_BIT = 0x20;
     switch (delegate.state)
     {
         case RobotNotConnected:
-            self.control.titleLabel.text = @"Enable";
-            self.control.titleLabel.textColor = [UIColor grayColor];
-            self.control.enabled = false;
+            [self.control setTitle:@"Enable" forState:UIControlStateNormal];
+            [self.control.titleLabel setTextColor:[UIColor grayColor]];
+            [self.control setEnabled:false];
             
             break;
         case RobotWatchdogNotFed:
-            self.control.titleLabel.text = @"Disable";
-            self.control.titleLabel.textColor = [UIColor redColor];
-            self.control.enabled = true;
+            [self.control setTitle:@"Disable" forState:UIControlStateNormal];
+            [self.control.titleLabel setTextColor:[UIColor redColor]];
+            [self.control setEnabled:true];
             
             break;
         case RobotDisabled:
-            self.control.titleLabel.text = @"Enable";
-            self.control.titleLabel.textColor = [UIColor colorWithRed:0 green:207 / 255.0f blue:65 / 255.0f alpha:1];
-            self.control.enabled = true;
+            [self.control setTitle:@"Enable" forState:UIControlStateNormal];
+            [self.control.titleLabel setTextColor:[UIColor colorWithRed:0 green:207 / 255.0f blue:65 / 255.0f alpha:1]];
+            [self.control setEnabled:true];
             
             break;
         case RobotEnabled:
-            self.control.titleLabel.text = @"Disable";
-            self.control.titleLabel.textColor = [UIColor redColor];
-            self.control.enabled = true;
-            
-            break;
         case RobotAutonomous:
-            self.control.titleLabel.text = @"Disable";
-            self.control.titleLabel.textColor = [UIColor redColor];
-            self.control.enabled = true;
+            [self.control setTitle:@"Disable" forState:UIControlStateNormal];
+            [self.control.titleLabel setTextColor:[UIColor redColor]];
+            [self.control setEnabled:true];
             
             break;
     }

@@ -10,6 +10,8 @@
 
 @interface StatusViewController : UITableViewController <UIAlertViewDelegate>
 
+@property (weak, nonatomic) IBOutlet UISegmentedControl *rioSelect;
+
 - (int)controlIndex;
 
 @end

@@ -30,6 +30,7 @@ static int toPort   = 1110;
 // + 20 == Enabled
 
 /*
+ 
  Joysticks 1 - 3
  
  Axis     | Code Reference
@@ -151,7 +152,7 @@ static int toPort   = 1110;
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [self.cbManager stopScan];
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -409,17 +410,6 @@ static int toPort   = 1110;
 			delegate.state = RobotDisabled;
 		}
 	}
-    
-    if (self.blueConnected)
-    {
-        //NSString *toBlueString = [NSString stringWithFormat:@"%i:%.2X.%.2X", delegate.state, fromRobotData.batteryVolts, fromRobotData.batteryMV];
-        
-        /*
-        [self.cbPeripheral writeValue:[toBlueString dataUsingEncoding:NSUTF8StringEncoding]
-                    forCharacteristic:self.receiveCharacteristic
-                                 type:CBCharacteristicWriteWithoutResponse];
-         */
-    }
 }
 
 -(void)updatePacket
@@ -451,20 +441,39 @@ static int toPort   = 1110;
     NSArray *stickArray = [controlView getAxisValues];
     
     uint16_t buttonsOut = 0;
+    uint16_t buttonsOut1 = 0;
     
-    buttonsOut |= detailController.button1Sel ? (1 << 0) : 0;
-    buttonsOut |= detailController.button2Sel ? (1 << 1) : 0;
-    buttonsOut |= detailController.button3Sel ? (1 << 2) : 0;
-    buttonsOut |= detailController.button4Sel ? (1 << 3) : 0;
-    buttonsOut |= detailController.button5Sel ? (1 << 4) : 0;
-    buttonsOut |= detailController.button6Sel ? (1 << 5) : 0;
-    
-    buttonsOut |= detailController.button21Sel ? (1 << 6) : 0;
-    buttonsOut |= detailController.button22Sel ? (1 << 7) : 0;
-    buttonsOut |= detailController.button23Sel ? (1 << 8) : 0;
-    buttonsOut |= detailController.button24Sel ? (1 << 9) : 0;
-    buttonsOut |= detailController.button25Sel ? (1 << 10) : 0;
-    buttonsOut |= detailController.button26Sel ? (1 << 11) : 0;
+    if (detailController.selectedJoystick.selectedSegmentIndex == 3)
+    {
+        buttonsOut |= detailController.button1Sel ? (1 << 0) : 0;
+        buttonsOut |= detailController.button2Sel ? (1 << 1) : 0;
+        buttonsOut |= detailController.button3Sel ? (1 << 2) : 0;
+        buttonsOut |= detailController.button4Sel ? (1 << 3) : 0;
+        buttonsOut |= detailController.button5Sel ? (1 << 4) : 0;
+        buttonsOut |= detailController.button6Sel ? (1 << 5) : 0;
+        
+        buttonsOut1 |= detailController.button21Sel ? (1 << 0) : 0;
+        buttonsOut1 |= detailController.button22Sel ? (1 << 1) : 0;
+        buttonsOut1 |= detailController.button23Sel ? (1 << 2) : 0;
+        buttonsOut1 |= detailController.button24Sel ? (1 << 3) : 0;
+        buttonsOut1 |= detailController.button25Sel ? (1 << 4) : 0;
+        buttonsOut1 |= detailController.button26Sel ? (1 << 5) : 0;
+    } else
+    {
+        buttonsOut |= detailController.button1Sel ? (1 << 0) : 0;
+        buttonsOut |= detailController.button2Sel ? (1 << 1) : 0;
+        buttonsOut |= detailController.button3Sel ? (1 << 2) : 0;
+        buttonsOut |= detailController.button4Sel ? (1 << 3) : 0;
+        buttonsOut |= detailController.button5Sel ? (1 << 4) : 0;
+        buttonsOut |= detailController.button6Sel ? (1 << 5) : 0;
+        
+        buttonsOut |= detailController.button21Sel ? (1 << 6) : 0;
+        buttonsOut |= detailController.button22Sel ? (1 << 7) : 0;
+        buttonsOut |= detailController.button23Sel ? (1 << 8) : 0;
+        buttonsOut |= detailController.button24Sel ? (1 << 9) : 0;
+        buttonsOut |= detailController.button25Sel ? (1 << 10) : 0;
+        buttonsOut |= detailController.button26Sel ? (1 << 11) : 0;
+    }
     
     switch (detailController.selectedJoystick.selectedSegmentIndex)
     {
@@ -495,17 +504,16 @@ static int toPort   = 1110;
             [Utilities setShort:&toRobotData.stick2Buttons value:buttonsOut];
             
             break;
-            /*
         case 3:
-            toRobotData.stick3.stick3Axes[0] = [(NSNumber *)[stickArray objectAtIndex:0] intValue];
-            toRobotData.stick3.stick3Axes[1] = [(NSNumber *)[stickArray objectAtIndex:1] intValue];
-            toRobotData.stick3.stick3Axes[2] = [(NSNumber *)[stickArray objectAtIndex:2] intValue];
-            toRobotData.stick3.stick3Axes[3] = [(NSNumber *)[stickArray objectAtIndex:3] intValue];
+            toRobotData.stick0.stick0Axes[0] = [(NSNumber *)[stickArray objectAtIndex:0] intValue];
+            toRobotData.stick0.stick0Axes[1] = [(NSNumber *)[stickArray objectAtIndex:1] intValue];
+            toRobotData.stick1.stick1Axes[0] = [(NSNumber *)[stickArray objectAtIndex:2] intValue];
+            toRobotData.stick1.stick1Axes[1] = [(NSNumber *)[stickArray objectAtIndex:3] intValue];
          
-            [Utilities setShort:&toRobotData.stick3Buttons value:buttonsOut];
+            [Utilities setShort:&toRobotData.stick0Buttons value:buttonsOut];
+            [Utilities setShort:&toRobotData.stick1Buttons value:buttonsOut1];
          
             break;
-             */
     }
 
     double x = acceleration.x;
@@ -516,9 +524,9 @@ static int toPort   = 1110;
     y *= (y < 0 ? 128 : 127);
     z *= (z < 0 ? 128 : 127);
     
-    toRobotData.stick3.stick3Axes[0] = (int)x;
-    toRobotData.stick3.stick3Axes[1] = (int)y;
-    toRobotData.stick3.stick3Axes[2] = (int)z;
+    toRobotData.stick3.stick3Axes[0] = (int) x;
+    toRobotData.stick3.stick3Axes[1] = (int) y;
+    toRobotData.stick3.stick3Axes[2] = (int) z;
     
     double xyz = sqrt(x * x + y * y + z * z);
     

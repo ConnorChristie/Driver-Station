@@ -75,7 +75,7 @@ static short TELEOP_BIT     = 0x40;
 {
     if (section == 0)
     {
-        return 1;
+        return 2;
     } else if (section == 1)
     {
         return 4;
@@ -113,6 +113,13 @@ static short TELEOP_BIT     = 0x40;
                 cell = [tableView dequeueReusableCellWithIdentifier:@"Team Number"];
             
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%i", delegate.teamNumber];
+            } else if (indexPath.row == 1)
+            {
+                cell = [tableView dequeueReusableCellWithIdentifier:@"RioSelect"];
+                
+                UISegmentedControl *control = (UISegmentedControl *) [cell viewWithTag:1];
+                
+                [control addTarget:self action:@selector(rioChanged:) forControlEvents:UIControlEventValueChanged];
             }
             
             break;
@@ -320,6 +327,19 @@ static short TELEOP_BIT     = 0x40;
         {
             data->control = TELEOP_BIT;
         }
+    }
+}
+
+- (void)rioChanged:(id)sender
+{
+    UISegmentedControl *selector = (UISegmentedControl *) sender;
+    
+    if (selector.selectedSegmentIndex == 0)
+    {
+        ((MainViewController *) self.parentViewController).ipFormat = @"10.%i.%i.2";
+    } else
+    {
+        ((MainViewController *) self.parentViewController).ipFormat = @"10.%i.%i.20";
     }
 }
 
